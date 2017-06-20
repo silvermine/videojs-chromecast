@@ -2,7 +2,7 @@
   "name": "silvermine-videojs-chromecast",
   "version": "0.9.0",
   "description": "video.js plugin for casting to chromecast",
-  "main": "src/index.js",
+  "main": "src/js/index.js",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec 'tests/**/*.test.js'"
   },
@@ -24,6 +24,9 @@
     "url": "https://github.com/silvermine/videojs-chromecast/issues"
   },
   "homepage": "https://github.com/silvermine/videojs-chromecast#readme",
+  "dependencies": {
+    "class.extend": "0.9.2"
+  },
   "devDependencies": {
     "class.extend": "0.9.2",
     "coveralls": "2.13.1",
