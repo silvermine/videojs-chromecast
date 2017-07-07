@@ -1,0 +1,39 @@
+$chromecast-color-main: #cccccc;
+
+.vjs-tech-chromecast {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden;
+
+   .vjs-tech-chromecast-poster {
+      &::after {
+         content: " ";
+         display: block;
+         height: 2px;
+         width: 100px;
+         background-color: $chromecast-color-main;
+         position: absolute;
+         left: calc(50% - 50px);
+      }
+   }
+   .vjs-tech-chromecast-poster-img {
+      max-height: 180px;
+      border: 2px solid $chromecast-color-main;
+   }
+   .vjs-tech-chromecast-title-container {
+      position: absolute;
+      bottom: 50%;
+      margin-bottom: 100px;
+      color: $chromecast-color-main;
+      text-align: center;
+   }
+   .vjs-tech-chromecast-title {
+      font-size: 22px;
+   }
+   .vjs-tech-chromecast-subtitle {
+      font-size: 18px;
+      padding-top: 0.5em;
+   }
+}

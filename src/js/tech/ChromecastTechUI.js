@@ -10,15 +10,18 @@ ChromecastTechUI = Class.extend({
 
    _createDOMElement: function() {
       var el = this._createElement('div', 'vjs-tech vjs-tech-chromecast'),
-          posterEl = this._createElement('img', 'vjs-tech-chromecast-poster'),
+          posterContainerEl = this._createElement('div', 'vjs-tech-chromecast-poster'),
+          posterImageEl = this._createElement('img', 'vjs-tech-chromecast-poster-img'),
           titleEl = this._createElement('div', 'vjs-tech-chromecast-title'),
           subtitleEl = this._createElement('div', 'vjs-tech-chromecast-subtitle'),
           titleContainer = this._createElement('div', 'vjs-tech-chromecast-title-container');
 
+      posterContainerEl.appendChild(posterImageEl);
       titleContainer.appendChild(titleEl);
       titleContainer.appendChild(subtitleEl);
-      el.appendChild(posterEl);
+
       el.appendChild(titleContainer);
+      el.appendChild(posterContainerEl);
 
       return el;
    },
@@ -38,6 +41,10 @@ ChromecastTechUI = Class.extend({
       return this._el.querySelector('.vjs-tech-chromecast-poster');
    },
 
+   _findPosterImageEl: function() {
+      return this._el.querySelector('.vjs-tech-chromecast-poster-img');
+   },
+
    _findTitleEl: function() {
       return this._el.querySelector('.vjs-tech-chromecast-title');
    },
@@ -49,9 +56,9 @@ ChromecastTechUI = Class.extend({
    updatePoster: function(poster) {
       this._poster = poster ? poster : null;
       if (poster) {
-         this._findPosterEl().setAttribute('src', poster);
+         this._findPosterImageEl().setAttribute('src', poster);
       } else {
-         this._findPosterEl().removeAttribute('src');
+         this._findPosterImageEl().removeAttribute('src');
       }
    },
 
