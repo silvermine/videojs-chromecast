@@ -3,7 +3,6 @@
   "version": "0.9.0",
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
-  "browser": "src/js/browser.js",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec 'tests/**/*.test.js'",
     "prepublish": "grunt build"

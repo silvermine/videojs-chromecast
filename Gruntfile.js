@@ -24,6 +24,10 @@ module.exports = function(grunt) {
          main: join('src', 'scss', 'videojs-chromecast.scss'),
       },
 
+      images: {
+         base: join('src', 'images'),
+      },
+
       dist: {
          base: join(__dirname, 'dist'),
       },
@@ -36,8 +40,10 @@ module.exports = function(grunt) {
 
    config.dist.css = {
       base: config.dist.base,
-      main: join(config.dist.base, 'videojs-chromecast.css'),
+      main: join(config.dist.base, 'silvermine-videojs-chromecast.css'),
    };
+
+   config.dist.images = join(config.dist.base, 'images');
 
    grunt.initConfig({
 
@@ -47,6 +53,19 @@ module.exports = function(grunt) {
 
       clean: {
          build: [ config.dist.base ],
+      },
+
+      copy: {
+         images: {
+            files: [
+               {
+                  expand: true,
+                  cwd: config.images.base,
+                  src: '**/*',
+                  dest: config.dist.images,
+               },
+            ],
+         },
       },
 
       eslint: {

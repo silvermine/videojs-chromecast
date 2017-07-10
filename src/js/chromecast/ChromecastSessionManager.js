@@ -21,6 +21,7 @@ ChromecastSessionManager = Class.extend({
 
       this.getCastContext().addEventListener(stateChangedEvent, function(event) {
          if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
+            this.player.trigger('chromecastDisconnected');
             this._reloadTech();
          }
       }.bind(this));
@@ -53,6 +54,7 @@ ChromecastSessionManager = Class.extend({
       }
       onSessionSuccess = function() {
          hasConnected = true;
+         this.player.trigger('chromecastConnected');
          this._reloadTech();
       }.bind(this);
 

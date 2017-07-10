@@ -1,4 +1,18 @@
-$chromecast-color-main: #cccccc;
+// Colors
+$chromecast-color-main: #cccccc !default;
+
+// Icon files
+$icon-chromecast--default: 'images/ic_cast_white_24dp.png' !default;
+$icon-chromecast--hover: 'images/ic_cast_white_24dp.png' !default;
+$icon-chromecast-casting: 'images/ic_cast_connected_white_24dp.png' !default;
+$icon-chromecast-casting--hover: 'images/ic_cast_connected_white_24dp.png' !default;
+
+// Sizes
+$chromecast-icon-size: 12px !default;
+$chromecast-title-font-size: 22px !default;
+$chromecast-subtitle-font-size: 18px !default;
+$chromecast-poster-width: 100px !default;
+$chromecast-poster-max-height: 180px !default;
 
 .vjs-tech-chromecast {
    display: flex;
@@ -6,20 +20,19 @@ $chromecast-color-main: #cccccc;
    justify-content: center;
    align-items: center;
    overflow: hidden;
-
    .vjs-tech-chromecast-poster {
       &::after {
          content: " ";
          display: block;
          height: 2px;
-         width: 100px;
+         width: $chromecast-poster-width;
          background-color: $chromecast-color-main;
          position: absolute;
-         left: calc(50% - 50px);
+         left: calc(50% - #{$chromecast-poster-width / 2});
       }
    }
    .vjs-tech-chromecast-poster-img {
-      max-height: 180px;
+      max-height: $chromecast-poster-max-height;
       border: 2px solid $chromecast-color-main;
    }
    .vjs-tech-chromecast-title-container {
@@ -30,10 +43,34 @@ $chromecast-color-main: #cccccc;
       text-align: center;
    }
    .vjs-tech-chromecast-title {
-      font-size: 22px;
+      font-size: $chromecast-title-font-size;
    }
    .vjs-tech-chromecast-subtitle {
-      font-size: 18px;
+      font-size: $chromecast-subtitle-font-size;
       padding-top: 0.5em;
+   }
+}
+
+.vjs-chromecast-button {
+   .vjs-icon-placeholder {
+      background: url($icon-chromecast--default) center center no-repeat;
+      background-size: contain;
+      display: inline-block;
+      width: $chromecast-icon-size;
+      height: $chromecast-icon-size;
+   }
+   &:hover {
+      cursor: pointer;
+      .vjs-icon-placeholder {
+         background-image: url($icon-chromecast--hover);
+      }
+   }
+   &.vjs-chromecast-casting-state {
+      .vjs-icon-placeholder {
+         background-image: url($icon-chromecast-casting);
+      }
+      &:hover .vjs-icon-placeholder {
+         background-image: url($icon-chromecast-casting--hover);
+      }
    }
 }
