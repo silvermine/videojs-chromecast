@@ -16,6 +16,7 @@ module.exports = function(grunt) {
    config = {
       js: {
          all: [ 'Gruntfile.js', 'src/**/*.js', 'tests/**/*.js' ],
+         browserMainFile: join('src', 'js', 'standalone.js'),
       },
 
       sass: {
@@ -24,8 +25,13 @@ module.exports = function(grunt) {
       },
 
       dist: {
-         base: path.join(__dirname, 'dist'),
+         base: join(__dirname, 'dist'),
       },
+   };
+
+   config.dist.js = {
+      bundle: join(config.dist.base, '<%= pkg.name %>.js'),
+      minified: join(config.dist.base, '<%= pkg.name %>.min.js'),
    };
 
    config.dist.css = {
@@ -36,7 +42,7 @@ module.exports = function(grunt) {
    grunt.initConfig({
 
       pkg: grunt.file.readJSON('package.json'),
-
+      versionInfo: getCodeVersion.both(),
       config: config,
 
       clean: {
@@ -45,6 +51,29 @@ module.exports = function(grunt) {
 
       eslint: {
          target: config.js.all,
+      },
+
+      browserify: {
+         main: {
+            src: config.js.browserMainFile,
+            dest: config.dist.js.bundle,
+         },
+      },
+
+      uglify: {
+         main: {
+            files: {
+               '<%= config.dist.js.minified %>': config.dist.js.bundle,
+            },
+            options: {
+               banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> <%= versionInfo %> */\n',
+               sourceMap: DEBUG,
+               sourceMapIncludeSources: DEBUG,
+               mangle: DEBUG,
+               compress: DEBUG,
+               beautify: !DEBUG,
+            },
+         },
       },
 
       sasslint: {
@@ -85,17 +114,40 @@ module.exports = function(grunt) {
          },
       },
 
+      watch: {
+         grunt: {
+            files: [ 'Gruntfile.js' ],
+            tasks: [ 'build' ],
+         },
+
+         js: {
+            files: [ 'src/**/*.js' ],
+            tasks: [ 'build-js' ],
+         },
+
+         css: {
+            files: [ 'src/**/*.scss' ],
+            tasks: [ 'build-css' ],
+         },
+      },
+
    });
 
    grunt.loadNpmTasks('grunt-contrib-clean');
+   grunt.loadNpmTasks('grunt-contrib-uglify');
+   grunt.loadNpmTasks('grunt-browserify');
+   grunt.loadNpmTasks('grunt-contrib-copy');
+   grunt.loadNpmTasks('grunt-contrib-watch');
    grunt.loadNpmTasks('grunt-eslint');
    grunt.loadNpmTasks('grunt-sass');
    grunt.loadNpmTasks('grunt-postcss');
    grunt.loadNpmTasks('grunt-sass-lint');
 
    grunt.registerTask('standards', [ 'eslint', 'sasslint' ]);
+   grunt.registerTask('build-js', [ 'browserify', 'uglify' ]);
    grunt.registerTask('build-css', [ 'sass', 'postcss:styles' ]);
-   grunt.registerTask('build', [ 'build-css' ]);
+   grunt.registerTask('build', [ 'build-js', 'build-css', 'copy:images' ]);
+   grunt.registerTask('develop', [ 'build', 'watch' ]);
    grunt.registerTask('default', [ 'standards' ]);
 
 };
