@@ -34,6 +34,10 @@ $chromecast-poster-max-height: 180px !default;
    .vjs-tech-chromecast-poster-img {
       max-height: $chromecast-poster-max-height;
       border: 2px solid $chromecast-color-main;
+      &.vjs-tech-chromecast-poster-img-empty {
+         width: 160px;
+         height: 90px;
+      }
    }
    .vjs-tech-chromecast-title-container {
       position: absolute;
@@ -44,10 +48,16 @@ $chromecast-poster-max-height: 180px !default;
    }
    .vjs-tech-chromecast-title {
       font-size: $chromecast-title-font-size;
+      &.vjs-tech-chromecast-title-empty {
+         display: none;
+      }
    }
    .vjs-tech-chromecast-subtitle {
       font-size: $chromecast-subtitle-font-size;
       padding-top: 0.5em;
+      &.vjs-tech-chromecast-subtitle-empty {
+         display: none;
+      }
    }
 }
 

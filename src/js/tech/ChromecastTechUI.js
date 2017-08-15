@@ -54,11 +54,15 @@ ChromecastTechUI = Class.extend({
    },
 
    updatePoster: function(poster) {
+      var posterImageEl = this._findPosterImageEl();
+
       this._poster = poster ? poster : null;
       if (poster) {
-         this._findPosterImageEl().setAttribute('src', poster);
+         posterImageEl.setAttribute('src', poster);
+         posterImageEl.classList.remove('vjs-tech-chromecast-poster-img-empty');
       } else {
-         this._findPosterImageEl().removeAttribute('src');
+         posterImageEl.removeAttribute('src');
+         posterImageEl.classList.add('vjs-tech-chromecast-poster-img-empty');
       }
    },
 
@@ -67,16 +71,26 @@ ChromecastTechUI = Class.extend({
    },
 
    updateTitle: function(title) {
+      var titleEl = this._findTitleEl();
+
       this._title = title;
       if (title) {
-         this._findTitleEl().innerHTML = title;
+         titleEl.innerHTML = title;
+         titleEl.classList.remove('vjs-tech-chromecast-title-empty');
+      } else {
+         titleEl.classList.add('vjs-tech-chromecast-title-empty');
       }
    },
 
    updateSubtitle: function(subtitle) {
+      var subtitleEl = this._findSubtitleEl();
+
       this._subtitle = subtitle;
       if (subtitle) {
-         this._findSubtitleEl().innerHTML = subtitle;
+         subtitleEl.innerHTML = subtitle;
+         subtitleEl.classList.remove('vjs-tech-chromecast-subtitle-empty');
+      } else {
+         subtitleEl.classList.add('vjs-tech-chromecast-subtitle-empty');
       }
    },
 });
