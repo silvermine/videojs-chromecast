@@ -9,13 +9,33 @@ function getCastContext() {
    return cast.framework.CastContext.getInstance();
 }
 
-ChromecastSessionManager = Class.extend({
+ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prototype **/ {
+
+   /**
+    * Stores the state of the current Chromecast session and its associated objects such
+    * as the
+    * [CastContext](https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext),
+    * [RemotePlayerController](https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayerController),
+    * and the
+    * [RemotePlayer](https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayer).
+    *
+    * @param player {object} Video.js Player
+    * @param options {object} Chromecast session configuration options
+    * @constructs ChromecastSessionManager
+    */
    init: function(player, options) {
       this.player = player;
       this.options = options || {};
       this._configureCastContext();
    },
 
+   /**
+    * Configures the
+    * [CastContext](https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext),
+    * with the settings provided in the constructor.
+    *
+    * @private
+    */
    _configureCastContext: function() {
       var stateChangedEvent = cast.framework.CastContextEventType.SESSION_STATE_CHANGED;
 
@@ -45,6 +65,10 @@ ChromecastSessionManager = Class.extend({
       this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
    },
 
+   /**
+    * Opens the Chromecast casting menu by requesting a CastSession. Does nothing if the
+    * Video.js player does not have a source.
+    */
    openCastMenu: function() {
       var onSessionSuccess;
 
@@ -69,6 +93,16 @@ ChromecastSessionManager = Class.extend({
          .then(onSessionSuccess, _.noop);
    },
 
+   /**
+    * Reloads the Video.js player's Tech. This causes the player to re-evaluate which
+    * Tech should be used for the current source by iterating over available Tech and
+    * calling `Tech.isSupported` and `Tech.canPlaySource`. Video.js uses the first
+    * Tech that returns true from both of those functions. This is what allows us to
+    * switch back and forth between the Chromecast Tech and other available Tech when a
+    * CastSession is connected or disconnected.
+    *
+    * @private
+    */
    _reloadTech: function() {
       var player = this.player,
           currentTime = player.currentTime(),
@@ -92,21 +126,47 @@ ChromecastSessionManager = Class.extend({
       });
    },
 
+   /**
+    * @see https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext
+    * @returns {object} the current CastContext, if one exists
+    */
    getCastContext: getCastContext,
 
+   /**
+    * @see https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayer
+    * @returns {object} the current RemotePlayer, if one exists
+    */
    getRemotePlayer: function() {
       return this.remotePlayer;
    },
 
+   /**
+    * @see https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayerController
+    * @returns {object} the current RemotePlayerController, if one exists
+    */
    getRemotePlayerController: function() {
       return this.remotePlayerController;
    },
 });
 
+
+/**
+ * Returns whether or not the current Chromecast API is available (that is,
+ * `window.chrome`, `window.chrome.cast`, and `window.cast` exist).
+ *
+ * @static
+ * @returns {boolean} true if the Chromecast API is available
+ */
 ChromecastSessionManager.isChromecastAPIAvailable = function() {
    return window.chrome && window.chrome.cast && window.cast;
 };
 
+/**
+ * Returns whether or not there is a current CastSession and it is connected.
+ *
+ * @static
+ * @returns {boolean} true if the current CastSession exists and is connected
+ */
 ChromecastSessionManager.isChromecastConnected = function() {
    // We must also check the `hasConnected` flag because
    // `getCastContext().getCastState()` returns `CONNECTED` even when the current casting
