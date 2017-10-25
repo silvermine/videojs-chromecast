@@ -90,9 +90,6 @@ player.chromecast(); // initializes the Chromecast plugin
 #### Configuration options
 
 ##### Plugin configuration
-* **`plugins.chromecast.buttonText`** - the text to display inside of the button
-  component. The text defaults to "Chromecast" and is used for accessibility purposes, so
-  it is visually hidden by default.
 * **`plugins.chromecast.receiverAppID`** - the string ID of a custom [Chromecast receiver
   app][cast-receiver] to use. Defaults to the [default Media Receiver ID][def-cast-id].
 
@@ -138,13 +135,22 @@ options = {
    },
    plugins: {
       chromecast: {
-         buttonText: 'Chromecast', // Not required
+         receiverAppID: '1234' // Not required
       },
-      receiverAppID: '1234' // Not required
    }
 };
 ```
 
+##### Localization
+
+The `ChromecastButton` component has one translated string: "Open Chromecast menu". The
+"Open Chromecast menu" string appears in both of the standard places for Button component
+accessibility text: inside the `.vjs-control-text` span and as the `<button>` element's
+`title` attribute.
+
+To localize the Chromecast button text, follow the steps in the
+[Video.js Languages tutorial][videojs-translation] to add an `"Open Chromecast menu"` key
+to the map of translation strings.
 
 ### Using the npm module
 
@@ -227,6 +233,7 @@ This software is released under the MIT license. See [the license file](LICENSE)
 details.
 
 [videojs-docs]: http://docs.videojs.com/tutorial-plugins.html
+[videojs-translation]: http://docs.videojs.com/tutorial-languages.html
 [cast-receiver]: https://developers.google.com/cast/docs/receiver_apps
 [def-cast-id]: https://developers.google.com/cast/docs/receiver_apps#default
 [player-source]: http://docs.videojs.com/Player.html#currentSource
