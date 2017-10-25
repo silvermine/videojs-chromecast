@@ -25,31 +25,15 @@ ChromecastButton = {
     *
     * @constructs
     * @extends external:Button
-    * @param options {object} the options to use for configuration
+    * @param player {Player} the video.js player instance
     */
-   constructor: function(player, options) {
-      // TODO internationalization
-      this._buttonText = options.buttonText || 'Chromecast';
+   constructor: function(player) {
       this.constructor.super_.apply(this, arguments);
 
       player.on('chromecastConnected', this._onChromecastConnected.bind(this));
       player.on('chromecastDisconnected', this._onChromecastDisconnected.bind(this));
-   },
 
-   /**
-    * Overrides Button#createControlTextEl to create the DOM element that contains the
-    * text within the button that is used for accessibility.
-    *
-    * @param el {DOMElement}
-    * @see {@link http://docs.videojs.com/Button.html#createControlTextEl|Button#createControlTextEl}
-    */
-   createControlTextEl: function(el) {
-      var textEl = document.createElement('span');
-
-      textEl.innerHTML = this._buttonText;
-      textEl.className = 'vjs-control-text';
-
-      el.appendChild(textEl);
+      this.controlText('Open Chromecast menu');
    },
 
    /**
