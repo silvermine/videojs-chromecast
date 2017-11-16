@@ -32,8 +32,19 @@ ChromecastButton = {
 
       player.on('chromecastConnected', this._onChromecastConnected.bind(this));
       player.on('chromecastDisconnected', this._onChromecastDisconnected.bind(this));
+      player.on('chromecastDevicesAvailable', this._onChromecastDevicesAvailable.bind(this));
+      player.on('chromecastDevicesUnavailable', this._onChromecastDevicesUnavailable.bind(this));
 
       this.controlText('Open Chromecast menu');
+
+      // Use the initial state of `hasAvailableDevices` to call the corresponding event
+      // handlers because the corresponding events may have already been emitted before
+      // binding the listeners above.
+      if (player.chromecastSessionManager && player.chromecastSessionManager.hasAvailableDevices()) {
+         this._onChromecastDevicesAvailable();
+      } else {
+         this._onChromecastDevicesUnavailable();
+      }
    },
 
    /**
@@ -78,6 +89,24 @@ ChromecastButton = {
    _onChromecastDisconnected: function() {
       this._isChromecastConnected = false;
       this._reloadCSSClasses();
+   },
+
+   /**
+    * Handles `chromecastDevicesAvailable` player events.
+    *
+    * @private
+    */
+   _onChromecastDevicesAvailable: function() {
+      this.show();
+   },
+
+   /**
+    * Handles `chromecastDevicesUnavailable` player events.
+    *
+    * @private
+    */
+   _onChromecastDevicesUnavailable: function() {
+      this.hide();
    },
 
    /**
