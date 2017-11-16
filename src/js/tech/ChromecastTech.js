@@ -114,7 +114,7 @@ ChromecastTech = {
     * @see {@link http://docs.videojs.com/Player.html#paused}
     */
    paused: function() {
-      return this._remotePlayer.isPaused || this.ended();
+      return this._remotePlayer.isPaused || this.ended() || this._remotePlayer.playerState === null;
    },
 
    /**
@@ -174,6 +174,7 @@ ChromecastTech = {
       request.currentTime = startTime;
 
       this._isMediaLoading = true;
+      this._hasPlayedCurrentItem = false;
       castSession.loadMedia(request)
          .then(function() {
             if (!this._hasPlayedAnyItem) {
@@ -507,11 +508,13 @@ ChromecastTech = {
           playerState = this._remotePlayer.playerState;
 
       if (playerState === states.PLAYING) {
+         this._hasPlayedCurrentItem = true;
          this.trigger('play');
          this.trigger('playing');
       } else if (playerState === states.PAUSED) {
          this.trigger('pause');
-      } else if (playerState === states.IDLE && this.ended()) {
+      } else if ((playerState === states.IDLE && this.ended()) || (playerState === null && this._hasPlayedCurrentItem)) {
+         this._hasPlayedCurrentItem = false;
          this._closeSessionOnTimeout();
          this.trigger('ended');
          this._triggerTimeUpdateEvent();
