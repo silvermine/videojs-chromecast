@@ -14,55 +14,120 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
    /**
     * Stores the state of the current Chromecast session and its associated objects such
     * as the
-    * [CastContext](https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext),
     * [RemotePlayerController](https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayerController),
     * and the
     * [RemotePlayer](https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayer).
     *
+    * WARNING: Do not instantiate this class until the
+    * [CastContext](https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext)
+    * has been configured.
+    *
+    * For an undocumented (and thus unknown) reason, RemotePlayer and
+    * RemotePlayerController instances created before the cast context has been configured
+    * or after requesting a session or loading media will not stay in sync with media
+    * items that are loaded later.
+    *
+    * For example, the first item that you cast will work as expected: events on
+    * RemotePlayerController will fire and the state (currentTime, duration, etc) of the
+    * RemotePlayer instance will update as the media item plays. However, if a new media
+    * item is loaded via a `loadMedia` request, the media item will play, but the
+    * remotePlayer will be in a "media unloaded" state where the duration is 0, the
+    * currentTime does not update, and no change events are fired (except, strangely,
+    * displayStatus updates).
+    *
     * @param player {object} Video.js Player
-    * @param options {object} Chromecast session configuration options
     * @constructs ChromecastSessionManager
     */
-   init: function(player, options) {
+   init: function(player) {
       this.player = player;
-      this.options = options || {};
-      this._configureCastContext();
+
+      this._addCastContextEventListeners();
+
+      // Remove global event listeners when this player instance is destroyed to prevent
+      // memory leaks.
+      this.player.on('dispose', this._removeCastContextEventListeners.bind(this));
+
+      this._notifyPlayerOfDevicesAvailabilityChange(this.getCastContext().getCastState());
+
+      this.remotePlayer = new cast.framework.RemotePlayer();
+      this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
    },
 
    /**
-    * Configures the
-    * [CastContext](https://developers.google.com/cast/docs/reference/chrome/cast.framework.CastContext),
-    * with the settings provided in the constructor.
+    * Add event listeners for events triggered on the current CastContext.
     *
     * @private
     */
-   _configureCastContext: function() {
-      var stateChangedEvent = cast.framework.CastContextEventType.SESSION_STATE_CHANGED;
+   _addCastContextEventListeners: function() {
+      var sessionStateChangedEvt = cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+          castStateChangedEvt = cast.framework.CastContextEventType.CAST_STATE_CHANGED;
 
-      this.getCastContext().addEventListener(stateChangedEvent, function(event) {
-         if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
-            this.player.trigger('chromecastDisconnected');
-            this._reloadTech();
-         }
-      }.bind(this));
+      this.getCastContext().addEventListener(sessionStateChangedEvt, this._onSessionStateChange.bind(this));
+      this.getCastContext().addEventListener(castStateChangedEvt, this._onCastStateChange.bind(this));
+   },
 
-      // We must create these objects here, after setting the options on the cast context
-      // (see the `configureCastContext` function in enableChromecast.js) but before
-      // requesting a session or loading media. For an undocumented (and thus unknown)
-      // reason, RemotePlayer and RemotePlayerController instances created later (for
-      // example, right after successfully creating and connecting to a session, in the
-      // `openCastMenu` function) will not stay in sync with media items that are loaded
-      // later.
-      //
-      // For example, the first item that you cast will work as expected: events on
-      // RemotePlayerController will fire and the state (currentTime, duration, etc) of
-      // the RemotePlayer instance will update as the media item plays. However, if a new
-      // media item is loaded via a `loadMedia` request, the media item will play, but the
-      // remotePlayer will be in a "media unloaded" state where the duration is 0, the
-      // currentTime does not update, and no change events are fired (except, strangely,
-      // displayStatus updates).
-      this.remotePlayer = new cast.framework.RemotePlayer();
-      this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
+   /**
+    * Remove event listeners that were added in {@link
+    * ChromecastSessionManager#_addCastContextEventListeners}.
+    *
+    * @private
+    */
+   _removeCastContextEventListeners: function() {
+      var sessionStateChangedEvt = cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+          castStateChangedEvt = cast.framework.CastContextEventType.CAST_STATE_CHANGED;
+
+      this.getCastContext().removeEventListener(sessionStateChangedEvt);
+      this.getCastContext().removeEventListener(castStateChangedEvt);
+   },
+
+   /**
+    * Handle the CastContext's SessionState change event.
+    *
+    * @private
+    */
+   _onSessionStateChange: function(event) {
+      if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
+         this.player.trigger('chromecastDisconnected');
+         this._reloadTech();
+      }
+   },
+
+   /**
+    * Handle the CastContext's CastState change event.
+    *
+    * @private
+    */
+   _onCastStateChange: function(event) {
+      this._notifyPlayerOfDevicesAvailabilityChange(event.castState);
+   },
+
+   /**
+    * Triggers player events that notifies listeners that Chromecast devices are
+    * either available or unavailable.
+    *
+    * @private
+    */
+   _notifyPlayerOfDevicesAvailabilityChange: function(castState) {
+      if (this.hasAvailableDevices(castState)) {
+         this.player.trigger('chromecastDevicesAvailable');
+      } else {
+         this.player.trigger('chromecastDevicesUnavailable');
+      }
+   },
+
+   /**
+    * Returns whether or not there are Chromecast devices available to cast to.
+    *
+    * @see https://developers.google.com/cast/docs/reference/chrome/cast.framework#.CastState
+    * @param {String} castState
+    * @return {boolean} true if there are Chromecast devices available to cast to.
+    */
+   hasAvailableDevices: function(castState) {
+      castState = castState || this.getCastContext().getCastState();
+
+      return castState === cast.framework.CastState.NOT_CONNECTED ||
+         castState === cast.framework.CastState.CONNECTING ||
+         castState === cast.framework.CastState.CONNECTED;
    },
 
    /**

@@ -35,12 +35,8 @@ function configureCastContext(options) {
  *
  * @private
  * @param player {object} a Video.js player instance
- * @param options {object} the plugin options
  */
-function onChromecastRequested(player, options) {
-   if (!player.chromecastSessionManager) {
-      player.chromecastSessionManager = new ChromecastSessionManager(player, options);
-   }
+function onChromecastRequested(player) {
    player.chromecastSessionManager.openCastMenu();
 }
 
@@ -59,7 +55,31 @@ function setUpChromecastButton(player, options) {
    }
    // Respond to requests for casting. The ChromecastButton component triggers this event
    // when the user clicks the Chromecast button.
-   player.on('chromecastRequested', onChromecastRequested.bind(null, player, options));
+   player.on('chromecastRequested', onChromecastRequested.bind(null, player));
+}
+
+/**
+ * Creates a {@link ChromecastSessionManager} and assigns it to the player.
+ *
+ * @private
+ * @param player {object} a Video.js player instance
+ */
+function createSessionManager(player) {
+   if (!player.chromecastSessionManager) {
+      player.chromecastSessionManager = new ChromecastSessionManager(player);
+   }
+}
+
+/**
+ * Sets up and configures the casting context and Chromecast button.
+ *
+ * @private
+ * @param options {object} the plugin options
+ */
+function enableChromecast(player, options) {
+   configureCastContext(options);
+   createSessionManager(player);
+   setUpChromecastButton(player, options);
 }
 
 /**
@@ -83,7 +103,7 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
    // function **before** loading the APIs. That would require us to expose some callback
    // function to `window` here, and would require users of this plugin to define a
    // Chromecast API callback on `window` that calls our callback function in their HTML
-   // file. To avoid all of this, we simply check check to see if the Chromecast API is
+   // file. To avoid all of this, we simply check to see if the Chromecast API is
    // available periodically, and stop after a timeout threshold has passed.
    //
    // See https://developers.google.com/cast/docs/chrome_sender_integrate#initialization
@@ -94,31 +114,11 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
       }
       if (ChromecastSessionManager.isChromecastAPIAvailable()) {
          clearInterval(intervalID);
-         configureCastContext(options);
-         setUpChromecastButton(player, options);
+         enableChromecast(player, options);
       }
       tries = tries + 1;
    }, CHECK_AVAILABILITY_INTERVAL);
 
-}
-
-/**
- * Sets up and configures the casting context and Chromecast button.
- *
- * @private
- * @param options {object} the plugin options
- */
-function enableChromecast(options) {
-   if (!this.controlBar) {
-      return;
-   }
-
-   if (ChromecastSessionManager.isChromecastAPIAvailable()) {
-      configureCastContext(options);
-      setUpChromecastButton(this, options);
-   } else {
-      waitUntilChromecastAPIsAreAvailable(this, options);
-   }
 }
 
 /**
@@ -169,9 +169,20 @@ function enableChromecast(options) {
  */
 module.exports = function(videojs) {
    videojs.registerPlugin('chromecast', function(options) {
+      options = options || {};
+
       // `this` is an instance of a Video.js Player.
       // Wait until the player is "ready" so that the player's control bar component has
       // been created.
-      this.ready(enableChromecast.bind(this, options || {}));
+      this.ready(function() {
+         if (!this.controlBar) {
+            return;
+         }
+         if (ChromecastSessionManager.isChromecastAPIAvailable()) {
+            enableChromecast(this, options);
+         } else {
+            waitUntilChromecastAPIsAreAvailable(this, options);
+         }
+      }.bind(this));
    });
 };
