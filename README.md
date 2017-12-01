@@ -92,6 +92,9 @@ player.chromecast(); // initializes the Chromecast plugin
 ##### Plugin configuration
 * **`plugins.chromecast.receiverAppID`** - the string ID of a custom [Chromecast receiver
   app][cast-receiver] to use. Defaults to the [default Media Receiver ID][def-cast-id].
+* **`plugins.chromecast.addButtonToControlBar`** - a `boolean` flag that tells the plugin
+  whether or not it should automatically add the Chromecast button to the Video.js
+  player's control bar component. Defaults to `true`.
 
 ##### Chromecast Tech configuration
 * **`chromecast.requestTitleFn`** - a function that this plugin calls when it needs a
@@ -136,6 +139,7 @@ options = {
    plugins: {
       chromecast: {
          receiverAppID: '1234' // Not required
+         addButtonToControlBar: false, // Defaults to true
       },
    }
 };
