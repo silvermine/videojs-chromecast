@@ -14,8 +14,8 @@ bar which will cast videos to a Chromecast.
 
 ## How do I use it?
 
-The `silvermine-videojs-chromecast` plugin includes 3 types of assets: javascript, CSS, and
-images.
+The `@silvermine/videojs-chromecast` plugin includes 3 types of assets: javascript, CSS,
+and images.
 
 You can either build the plugin locally and use the assets that are output from the build
 process directly, or you can install the plugin as an npm module, include the
@@ -33,17 +33,17 @@ module, the Chromecast framework will need to be included after the plugin. For 
 
 ### Building the plugin locally
 
-   1. Either clone this repository or install the `silvermine-videojs-chromecast` module
-      using `npm install silvermine-videojs-chromecast`.
-   2. Ensure that `silvermine-videojs-chromecast`'s `devDependencies` are installed by
-      running `npm install` from within the `silvermine-videojs-chromecast` folder.
+   1. Either clone this repository or install the `@silvermine/videojs-chromecast` module
+      using `npm install @silvermine/videojs-chromecast`.
+   2. Ensure that `@silvermine/videojs-chromecast`'s `devDependencies` are installed by
+      running `npm install` from within the `videojs-chromecast` folder.
    3. Run `grunt build` to build and copy the javascript, CSS and image files to the
-      `silvermine-videojs-chromecast/dist` folder.
+      `videojs-chromecast/dist` folder.
    4. Copy the plugin's files from the `dist` folder into your project as needed.
    5. Ensure that the images in the `dist/images` folder are accessible at `./images/`,
       relative to where the plugin's CSS is located. If, for example, your CSS is located
-      at `https://example.com/plugins/silvermine-videojs-chromecast.css`, then the plugin's
-      images should be located at `https://example.com/plugins/images/`.
+      at `https://example.com/plugins/silvermine-videojs-chromecast.css`, then the
+      plugin's images should be located at `https://example.com/plugins/images/`.
    6. Follow the steps in the "Configuration" section below.
 
 Note: when adding the plugin's javascript to your web page, include the
@@ -73,7 +73,7 @@ If requiring this plugin via NPM, any desired initialization options can be supp
 the constructor function exported by the module. For example:
 
 ```js
-require('silvermine-videojs-chromecast')(videojs, { preloadWebComponents: true });
+require('@silvermine/videojs-chromecast')(videojs, { preloadWebComponents: true });
 ```
 
 #### Providing initialization options via `<script>`
@@ -207,16 +207,17 @@ to the map of translation strings.
 ### Using the npm module
 
 If you are using a module loader such as Browserify or Webpack, first install
-`silvermine-videojs-chromecast` using `npm install`. Then, use
-`require('silvermine-videojs-chromecast')` to require `silvermine-videojs-chromecast` into your
-project's source code. `require('silvermine-videojs-chromecast')` returns a function that
-you can use to register the plugin with videojs by passing in a reference to `videojs`:
+`@silvermine/videojs-chromecast` using `npm install`. Then, use
+`require('@silvermine/videojs-chromecast')` to require `@silvermine/videojs-chromecast`
+into your project's source code. `require('@silvermine/videojs-chromecast')` returns a
+function that you can use to register the plugin with videojs by passing in a reference to
+`videojs`:
 
 ```js
 var videojs = require('video.js');
 
 // Initialize the Chromecast plugin
-require('silvermine-videojs-chromecast')(videojs);
+require('@silvermine/videojs-chromecast')(videojs);
 ```
 
 Then, follow the steps in the "Configuration" section above.
@@ -227,7 +228,7 @@ If you are using SCSS in your project, you can simply reference the plugin's mai
 file in your project's SCSS:
 
 ```scss
-@import "path/to/node_modules/silvermine-videojs-chromecast/src/scss/videojs-chromecast";
+@import "path/to/node_modules/@silvermine/videojs-chromecast/src/scss/videojs-chromecast";
 ```
 
 Optionally, you can override the SCSS variables that contain the paths to the icon
@@ -261,7 +262,7 @@ image files:
 
 #### Images
 
-The plugin's images are located at `silvermine-videojs-chromecast/src/images`. If you have
+The plugin's images are located at `videojs-chromecast/src/images`. If you have
 not overridden the icon image path variables in the SCSS, then copy the images from the
 `src/images` folder to a folder that is accessible at `./images/`, relative to where the
 plugin's CSS is located. If, for example, your CSS is located at
