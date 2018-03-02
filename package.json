@@ -1,5 +1,5 @@
 {
-  "name": "silvermine-videojs-chromecast",
+  "name": "@silvermine/videojs-chromecast",
   "version": "0.9.0",
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
