@@ -22,6 +22,15 @@ process directly, or you can install the plugin as an npm module, include the
 javascript and SCSS source in your project using a Common-JS module loader and SASS build
 process, and copy the images from the image source folder to your project.
 
+Note that regardless of whether you are using this plugin via the pre-built JS or as a
+module, the Chromecast framework will need to be included after the plugin. For example:
+
+```html
+<script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
+<script src="./dist/silvermine-videojs-chromecast.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+```
+
 ### Building the plugin locally
 
    1. Either clone this repository or install the `silvermine-videojs-chromecast` module
@@ -42,6 +51,45 @@ Note: when adding the plugin's javascript to your web page, include the
 Video.js. The plugin's built javascript file expects there to be a reference to Video.js
 at `window.videojs` and will throw an error if it does not exist.
 
+### Initialization options
+
+* **`preloadWebComponents`** (default: `false`) - The Chromecast framework relies on the
+  `webcomponents.js` polyfill when a browser does not have `document.registerElement`.
+  If you are using jQuery, this polyfill must be loaded and initialized before jQuery is
+  initialized. Unfortunately, the Chromecast framework loads the `webcomponents.js`
+  polyfill via a dynamically created `<script>` tag. This causes a race condition (see
+  #17). Setting `preloadWebComponents` to `true` will make this plugin add the
+  `webcomponents.js` polyfill synchronously when the polyfill is needed. If you use the
+  `preloadWebComponents: true` option, you should make sure that this plugin is loaded
+  before jQuery. Then include the Chromecast framework after this plugin as you normally
+  would.
+
+  tl;dr: if you use jQuery, you should use the `preloadWebComponents: true` option in
+  this plugin.
+
+#### Providing initialization options via `require()`
+
+If requiring this plugin via NPM, any desired initialization options can be supplied to
+the constructor function exported by the module. For example:
+
+```js
+require('silvermine-videojs-chromecast')(videojs, { preloadWebComponents: true });
+```
+
+#### Providing initialization options via `<script>`
+
+If using the prebuilt JS, the initialization options can be provided via
+`window.SILVERMINE_VIDEOJS_CHROMECAST_CONFIG`. Note that these options need to be set
+before the `<script>` tag to include the plugin.
+
+```html
+<script>
+   window.SILVERMINE_VIDEOJS_CHROMECAST_CONFIG = {
+      preloadWebComponents: true,
+   };
+</script>
+<script src="path/to/silvermine-videojs-chromecast.js"></script>
+```
 
 ### Configuration
 

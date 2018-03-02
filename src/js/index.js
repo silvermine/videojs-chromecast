@@ -1,7 +1,9 @@
 /* eslint-disable global-require */
 'use strict';
 
-var createChromecastButton = require('./components/ChromecastButton'),
+var _ = require('underscore'),
+    preloadWebComponents = require('./preloadWebComponents'),
+    createChromecastButton = require('./components/ChromecastButton'),
     createChromecastTech = require('./tech/ChromecastTech'),
     enableChromecast = require('./enableChromecast');
 
@@ -14,11 +16,19 @@ var createChromecastButton = require('./components/ChromecastButton'),
  * {@link module:ChromecastButton} and {@link module:enableChromecast} for more details
  * about how the plugin and button are registered and configured.
  *
- * @param {object} videojs
+ * @param videojs {object} the videojs library. If `undefined`, this plugin
+ * will look to `window.videojs`.
+ * @param userOpts {object} the options to use for configuration
  * @see module:enableChromecast
  * @see module:ChromecastButton
  */
-module.exports = function(videojs) {
+module.exports = function(videojs, userOpts) {
+   var options = _.defaults(_.extend({}, userOpts), { preloadWebComponents: false });
+
+   if (options.preloadWebComponents) {
+      preloadWebComponents();
+   }
+
    videojs = videojs || window.videojs;
    createChromecastButton(videojs);
    createChromecastTech(videojs);
