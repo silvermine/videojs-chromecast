@@ -152,6 +152,9 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
  *       },
  *       requestSubtitleFn: function(source) {
  *          return subtitles[source.url];
+ *       },
+ *       requestCustomDataFn: function(source) {
+ *          return customData[source.url];
  *       }
  *    }
  * };
