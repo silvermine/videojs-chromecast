@@ -54,15 +54,27 @@ at `window.videojs` and will throw an error if it does not exist.
 ### Initialization options
 
 * **`preloadWebComponents`** (default: `false`) - The Chromecast framework relies on the
-  `webcomponents.js` polyfill when a browser does not have `document.registerElement`.
-  If you are using jQuery, this polyfill must be loaded and initialized before jQuery is
-  initialized. Unfortunately, the Chromecast framework loads the `webcomponents.js`
-  polyfill via a dynamically created `<script>` tag. This causes a race condition (see
-  #17). Setting `preloadWebComponents` to `true` will make this plugin add the
-  `webcomponents.js` polyfill synchronously when the polyfill is needed. If you use the
-  `preloadWebComponents: true` option, you should make sure that this plugin is loaded
-  before jQuery. Then include the Chromecast framework after this plugin as you normally
-  would.
+  `webcomponents.js` polyfill when a browser does not have `document.registerElement` in
+  order to create the `<google-cast-button>` custom component (which is not used by this
+  plugin).  If you are using jQuery, this polyfill must be loaded and initialized before
+  jQuery is initialized. Unfortunately, the Chromecast framework loads the
+  `webcomponents.js` polyfill via a dynamically created `<script>` tag. This causes a race
+  condition (see #17). Also, including `webcomponents.js` anywhere on the page will break
+  jQuery's fix for bubbling some events to `document` (e.g. `onchange` events for
+  `<select>`, see #21).  Setting `preloadWebComponents` to `true` will "fix" these 2
+  problems by (1) making this plugin add the `webcomponents` polyfill synchronously when
+  the polyfill is needed and (2) using the `webcomponents-lite.js` version as it does not
+  include the shadow DOM polyfills, but still provides the `registerElement` polyfill that
+  the Chromecast framework needs. If you use the `preloadWebComponents: true` option, you
+  should make sure that this plugin is loaded before jQuery. Then include the Chromecast
+  framework after this plugin as you normally would.
+
+  **Note:** There is a caveat to using the `preloadWebComponents` setting.
+  Because the Chromecast plugin uses the shadow DOM to create the
+  `<google-cast-button>` custom component, **the `<google-cast-button>` custom
+  component may partly render, but it will not be functional**. This tag is not
+  used by this plugin. However if you must use this tag elsewhere, you should
+  not use the `preloadWebComponents` flag.
 
   tl;dr: if you use jQuery, you should use the `preloadWebComponents: true` option in
   this plugin.
