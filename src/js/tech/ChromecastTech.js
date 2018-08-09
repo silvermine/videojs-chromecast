@@ -414,6 +414,18 @@ ChromecastTech = {
    },
 
    /**
+    * Gets the Chromecast equivalent of HTML5 Media Element's `readyState`.
+    *
+    * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
+    */
+   readyState: function() {
+      if (this._remotePlayer.playerState === 'IDLE' || this._remotePlayer.playerState === 'BUFFERING') {
+         return 0; // HAVE_NOTHING
+      }
+      return 4;
+   },
+
+   /**
     * Wires up event listeners for
     * [RemotePlayerController](https://developers.google.com/cast/docs/reference/chrome/cast.framework.RemotePlayerController)
     * events.
