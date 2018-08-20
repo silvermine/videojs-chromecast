@@ -405,6 +405,23 @@ ChromecastTech = {
    },
 
    /**
+    * @returns {number} the chromecast player's playback rate, if available. Otherwise,
+    * the return value defaults to `1`.
+    */
+   playbackRate: function() {
+      var mediaSession = this._getMediaSession();
+
+      return mediaSession ? mediaSession.playbackRate : 1;
+   },
+
+   /**
+    * Does nothing. Changing the playback rate is not supported.
+    */
+   setPlaybackRate: function() {
+      // Not supported
+   },
+
+   /**
     * Causes the Tech to begin loading the current source. `load` is not supported in this
     * ChromecastTech because setting the source on the `Chromecast` automatically causes
     * it to begin loading.
