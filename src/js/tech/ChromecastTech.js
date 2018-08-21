@@ -54,6 +54,7 @@ ChromecastTech = {
       this._hasPlayedAnyItem = false;
       this._requestTitle = options.requestTitleFn || _.noop;
       this._requestSubtitle = options.requestSubtitleFn || _.noop;
+      this._requestCustomData = options.requestCustomDataFn || _.noop;
       // See `currentTime` function
       this._initialStartTime = options.startTime || 0;
 
@@ -156,6 +157,7 @@ ChromecastTech = {
           mediaInfo = new chrome.cast.media.MediaInfo(source.src, source.type),
           title = this._requestTitle(source),
           subtitle = this._requestSubtitle(source),
+          customData = this._requestCustomData(source),
           request;
 
       this.trigger('waiting');
@@ -165,6 +167,9 @@ ChromecastTech = {
       mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
       mediaInfo.metadata.title = title;
       mediaInfo.metadata.subtitle = subtitle;
+      if (customData) {
+         mediaInfo.customData = customData;
+      }
 
       this._ui.updateTitle(title);
       this._ui.updateSubtitle(subtitle);
