@@ -1,9 +1,9 @@
 # Silvermine VideoJS Chromecast Plugin
 
-[![Build Status](https://travis-ci.org/silvermine/videojs-chromecast.png?branch=master)](https://travis-ci.org/silvermine/videojs-chromecast)
+[![Build Status](https://travis-ci.org/silvermine/videojs-chromecast.svg?branch=master)](https://travis-ci.org/silvermine/videojs-chromecast)
 [![Coverage Status](https://coveralls.io/repos/github/silvermine/videojs-chromecast/badge.svg?branch=master)](https://coveralls.io/github/silvermine/videojs-chromecast?branch=master)
-[![Dependency Status](https://david-dm.org/silvermine/videojs-chromecast.png)](https://david-dm.org/silvermine/videojs-chromecast)
-[![Dev Dependency Status](https://david-dm.org/silvermine/videojs-chromecast/dev-status.png)](https://david-dm.org/silvermine/videojs-chromecast#info=devDependencies&view=table)
+[![Dependency Status](https://david-dm.org/silvermine/videojs-chromecast.svg)](https://david-dm.org/silvermine/videojs-chromecast)
+[![Dev Dependency Status](https://david-dm.org/silvermine/videojs-chromecast/dev-status.svg)](https://david-dm.org/silvermine/videojs-chromecast#info=devDependencies&view=table)
 
 
 ## What is it?
