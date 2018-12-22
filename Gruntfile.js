@@ -97,7 +97,7 @@ module.exports = function(grunt) {
 
       sasslint: {
          options: {
-            configFile: join(__dirname, 'node_modules', 'sass-lint-config-silvermine', 'sass-lint.yml'),
+            configFile: join(__dirname, 'node_modules', '@silvermine/sass-lint-config', 'sass-lint.yml'),
          },
          target: config.sass.all,
       },
