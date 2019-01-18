@@ -55,6 +55,6 @@
     "underscore": "1.8.3"
   },
   "peerDependencies": {
-    "video.js": "6.x"
+    "video.js": "6.x || 7.x"
   }
 }
