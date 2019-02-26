@@ -365,6 +365,33 @@ ChromecastTech = {
    },
 
    /**
+    * This function is "required" when implementing {@link external:Tech} and is supposed
+    * to return a mock
+    * {@link https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges|TimeRanges}
+    * object that represents the portions of the current media item that has playable
+    * content. However, the Chromecast API does not currently provide a way to determine
+    * how much the media item has playable content, so we'll just assume the entire video
+    * is an available seek target.
+    *
+    * The risk here lies with live streaming, where there may exist a sliding window of
+    * playable content and seeking is only possible within the last X number of minutes,
+    * rather than for the entire video.
+    *
+    * Unfortunately we have no way of detecting when this is the case. Returning anything
+    * other than the full range of the video means that we lose the ability to seek during
+    * VOD.
+    *
+    * @returns {TimeRanges} always returns a `TimeRanges` object with one `TimeRange` that
+    * starts at `0` and ends at the `duration` of the current media item
+    * @see {@link http://docs.videojs.com/Player.html#seekable}
+    */
+   seekable: function() {
+      // TODO Investigate if there's a way to detect if the source is live, so that we can
+      // possibly adjust the seekable `TimeRanges` accordingly.
+      return this.videojs.createTimeRange(0, this.duration());
+   },
+
+   /**
     * Returns whether the native media controls should be shown (`true`) or hidden
     * (`false`). Not applicable to this Tech.
     *
