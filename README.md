@@ -17,19 +17,22 @@ bar which will cast videos to a Chromecast.
 The `@silvermine/videojs-chromecast` plugin includes 3 types of assets: javascript, CSS,
 and images.
 
-You can either build the plugin locally and use the assets that are output from the build
+The quickest way to get up and running is to the include the javascript and css assets from
+a cdn like so:
+
+```html
+<script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@silvermine/videojs-chromecast@1.2.0/dist/silvermine-videojs-chromecast.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+```
+
+Or you can either build the plugin locally and use the assets that are output from the build
 process directly, or you can install the plugin as an npm module, include the
 javascript and SCSS source in your project using a Common-JS module loader and SASS build
 process, and copy the images from the image source folder to your project.
 
-Note that regardless of whether you are using this plugin via the pre-built JS or as a
-module, the Chromecast framework will need to be included after the plugin. For example:
-
-```html
-<script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
-<script src="./dist/silvermine-videojs-chromecast.min.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
-```
+**Note** that regardless of whether you are using this plugin via a cdn, the pre-built JS, or as a
+module, the Chromecast framework will need to be included after the plugin.
 
 ### Building the plugin locally
 
