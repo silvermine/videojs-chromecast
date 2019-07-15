@@ -17,7 +17,7 @@ bar which will cast videos to a Chromecast.
 The `@silvermine/videojs-chromecast` plugin includes 3 types of assets: javascript, CSS,
 and images.
 
-The quickest way to get up and running is to the include the javascript and css assets from
+The quickest way to get up and running is to include the javascript and css assets from
 a cdn like so:
 
 ```html
