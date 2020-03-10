@@ -193,6 +193,7 @@ ChromecastTech = {
             this.trigger('playing');
             this._hasPlayedAnyItem = true;
             this._isMediaLoading = false;
+            this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
          }.bind(this), this._triggerErrorEvent.bind(this));
    },
 
@@ -269,6 +270,10 @@ ChromecastTech = {
     */
    ended: function() {
       var mediaSession = this._getMediaSession();
+
+      if (!mediaSession && this._hasMediaSessionEnded) {
+         return true;
+      }
 
       return mediaSession ? (mediaSession.idleReason === chrome.cast.media.IdleReason.FINISHED) : false;
    },
@@ -582,6 +587,19 @@ ChromecastTech = {
       } else if (playerState === states.BUFFERING) {
          this.trigger('waiting');
       }
+   },
+
+   /**
+    * Handles Chromecast MediaSession state change events. The only property sent to this
+    * event is whether the session is alive. This is useful for determining if an item has
+    * ended as the MediaSession will fire this event with `false` then be immediately
+    * destroyed. This means that we cannot trust `idleReason` to show whether an item has
+    * ended since we may no longer have access to the MediaSession.
+    *
+    * @private
+    */
+   _onMediaSessionStatusChanged: function(isAlive) {
+      this._hasMediaSessionEnded = !!isAlive;
    },
 
    /**
