@@ -5,7 +5,8 @@
   "main": "src/js/index.js",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec 'tests/**/*.test.js'",
-    "prepublish": "grunt build"
+    "prepublish": "grunt build",
+    "serve": "node docs/demo/server.js"
   },
   "author": "Jeremy Thomerson",
   "license": "MIT",
