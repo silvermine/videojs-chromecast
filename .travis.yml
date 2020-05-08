@@ -5,12 +5,13 @@ node_js:
    - "10"
    - "8"
 
-before_install: if [[ `npm -v` != 6* ]]; then npm i -g npm@6.4.1; fi
+before_install: npm i -g npm@6.13.4
 
 script:
    - node --version
    - npm --version
    - grunt standards
+   - commitlint-travis
    - npm test
 
 # For code coverage:

@@ -10,7 +10,7 @@ var ChromecastSessionManager = require('../chromecast/ChromecastSessionManager')
  * @module ChomecastTech
  */
 
- /**
+/**
  * The Video.js Tech class is the base class for classes that provide media playback
  * technology implementations to Video.js such as HTML5, Flash and HLS.
  *
