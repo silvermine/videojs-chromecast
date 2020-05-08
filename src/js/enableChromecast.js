@@ -58,8 +58,8 @@ function setUpChromecastButton(player, options) {
       indexOpt = player.controlBar.children().length;
       if (typeof options.buttonPositionIndex !== 'undefined') {
          indexOpt = options.buttonPositionIndex >= 0
-           ? options.buttonPositionIndex
-           : player.controlBar.children().length + options.buttonPositionIndex;
+            ? options.buttonPositionIndex
+            : player.controlBar.children().length + options.buttonPositionIndex;
       }
       player.controlBar.addChild('chromecastButton', options, indexOpt);
    }
