@@ -27,7 +27,7 @@
   "homepage": "https://github.com/silvermine/videojs-chromecast#readme",
   "dependencies": {
     "class.extend": "0.9.1",
-    "underscore": "1.8.3",
+    "underscore": "1.9.1",
     "webcomponents.js": "git+https://git@github.com/webcomponents/webcomponentsjs.git#v0.7.24"
   },
   "devDependencies": {
@@ -38,14 +38,14 @@
     "coveralls": "3.0.2",
     "eslint": "4.0.0",
     "expect.js": "0.3.1",
-    "grunt": "1.0.3",
+    "grunt": "1.1.0",
     "grunt-browserify": "5.3.0",
-    "grunt-contrib-clean": "1.1.0",
+    "grunt-contrib-clean": "2.0.0",
     "grunt-contrib-copy": "1.0.0",
     "grunt-contrib-uglify": "3.0.1",
     "grunt-contrib-watch": "1.1.0",
     "grunt-eslint": "20.0.0",
-    "grunt-postcss": "0.8.0",
+    "grunt-postcss": "0.9.0",
     "grunt-sass": "3.1.0",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",
@@ -53,8 +53,7 @@
     "node-sass": "4.14.1",
     "rewire": "2.5.2",
     "silvermine-serverless-utils": "git+https://github.com/silvermine/serverless-utils.git#910f1149af824fc8d0fa840878079c7d3df0f414",
-    "sinon": "2.3.5",
-    "underscore": "1.8.3"
+    "sinon": "2.3.5"
   },
   "peerDependencies": {
     "video.js": ">= 6 < 8"
