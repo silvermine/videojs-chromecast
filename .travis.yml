@@ -1,10 +1,9 @@
 language: node_js
 node_js:
    - "lts/*" # Latest LTS version
+   - "12"
    - "10"
    - "8"
-   - "8.10"
-   - "6"
 
 before_install: if [[ `npm -v` != 6* ]]; then npm i -g npm@6.4.1; fi
 
