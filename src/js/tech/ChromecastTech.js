@@ -459,6 +459,13 @@ ChromecastTech = {
    },
 
    /**
+    * Does nothing. Satisfies calls to the missing preload method.
+    */
+   preload: function() {
+      // Not supported
+   },
+
+   /**
     * Causes the Tech to begin loading the current source. `load` is not supported in this
     * ChromecastTech because setting the source on the `Chromecast` automatically causes
     * it to begin loading.
