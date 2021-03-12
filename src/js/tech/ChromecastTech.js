@@ -31,10 +31,12 @@ ChromecastTech = {
     * @see {@link https://developers.google.com/cast/|Google Cast}
     */
    constructor: function(options) {
-      var subclass;
+      var mediaSession,
+          textTrackDisplay,
+          subclass;
 
       this._eventListeners = [];
-
+      this.options = options;
       this.videojsPlayer = this.videojs(options.playerId);
       this._chromecastSessionManager = this.videojsPlayer.chromecastSessionManager;
 
@@ -49,7 +51,7 @@ ChromecastTech = {
       this._remotePlayer = this._chromecastSessionManager.getRemotePlayer();
       this._remotePlayerController = this._chromecastSessionManager.getRemotePlayerController();
       this._listenToPlayerControllerEvents();
-      this.on('dispose', this._removeAllEventListeners.bind(this));
+      this.on('dispose', this._onDispose.bind(this));
 
       this._hasPlayedAnyItem = false;
       this._requestTitle = options.requestTitleFn || _.noop;
@@ -58,10 +60,22 @@ ChromecastTech = {
       // See `currentTime` function
       this._initialStartTime = options.startTime || 0;
 
-      this._playSource(options.source, this._initialStartTime);
+      mediaSession = this._getMediaSession();
+      if (mediaSession && mediaSession.media && mediaSession.media.contentId === options.source.id) {
+         this.onLoadSessionSucces();
+      } else {
+         this._playSource(options.source, this._initialStartTime);
+      }
+
       this.ready(function() {
          this.setMuted(options.muted);
       }.bind(this));
+      this.videojsPlayer.remoteTextTracks().on('change', this._onChangeTrack.bind(this));
+      textTrackDisplay = this.videojsPlayer.getChild('TextTrackDisplay');
+
+      if (textTrackDisplay) {
+         textTrackDisplay.hide();
+      }
 
       return subclass;
    },
@@ -145,6 +159,53 @@ ChromecastTech = {
    },
 
    /**
+    * transform trackdata in cast Track
+    * @param trackData
+    */
+   generateTrack: function(trackData, id) {
+      var sub = new chrome.cast.media.Track(id, chrome.cast.media.TrackType.TEXT),
+          textTrackTypes;
+
+      textTrackTypes = {
+         subtitles: chrome.cast.media.TextTrackType.SUBTITLES,
+         captions: chrome.cast.media.TextTrackType.CAPTIONS,
+         descriptions: chrome.cast.media.TextTrackType.DESCRIPTIONS,
+         chapters: chrome.cast.media.TextTrackType.CHAPTERS,
+         metadata: chrome.cast.media.TextTrackType.METADATA,
+      };
+
+      sub.trackContentId = trackData.src;
+      sub.subtype = textTrackTypes[trackData.kind];
+      sub.name = trackData.language;
+      sub.language = trackData.language;
+      return sub;
+   },
+
+   /**
+    * _onChangeTrack
+    * @private
+    */
+   _onChangeTrack: function() {
+      var castSession = cast.framework.CastContext.getInstance().getCurrentSession(),
+          media = castSession.getMediaSession(),
+          index, subtitles, tracksInfoRequest, i;
+
+
+      if (castSession) {
+         index = [];
+         subtitles = this.videojsPlayer.remoteTextTracks();
+         for (i = 0; i < subtitles.length; i++) {
+            if (subtitles[i].mode === 'showing') {
+               index = [ i ];
+            }
+         }
+         tracksInfoRequest = new chrome.cast.media.EditTracksInfoRequest(index);
+
+         media.editTracksInfo(tracksInfoRequest, _.noop, _.noop);
+      }
+   },
+
+   /**
     * Plays the given source, beginning at an optional starting time.
     *
     * @private
@@ -154,11 +215,17 @@ ChromecastTech = {
     */
    _playSource: function(source, startTime) {
       var castSession = this._getCastSession(),
-          mediaInfo = new chrome.cast.media.MediaInfo(source.src, source.type),
+          mediaInfo = new chrome.cast.media.MediaInfo(),
           title = this._requestTitle(source),
           subtitle = this._requestSubtitle(source),
           customData = this._requestCustomData(source),
-          request;
+          textTrackJsonTracks = this.videojsPlayer.textTracksJson_,
+          request,
+          i;
+
+      mediaInfo.contentId = source.id;
+      mediaInfo.contentUrl = source.src;
+      mediaInfo.contentType = source.type;
 
       this.trigger('waiting');
       this._clearSessionTimeout();
@@ -167,6 +234,16 @@ ChromecastTech = {
       mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
       mediaInfo.metadata.title = title;
       mediaInfo.metadata.subtitle = subtitle;
+      mediaInfo.tracks = [];
+      mediaInfo.activeTrackIds = [];
+
+      for (i = 0; i < textTrackJsonTracks.length; i++) {
+         mediaInfo.tracks.push(this.generateTrack(textTrackJsonTracks[i], i));
+         if (textTrackJsonTracks[i].mode === 'showing') {
+            mediaInfo.activeTrackIds.push(i);
+         }
+      }
+
       if (customData) {
          mediaInfo.customData = customData;
       }
@@ -181,20 +258,45 @@ ChromecastTech = {
       this._isMediaLoading = true;
       this._hasPlayedCurrentItem = false;
       castSession.loadMedia(request)
-         .then(function() {
-            if (!this._hasPlayedAnyItem) {
-               // `triggerReady` is required here to notify the Video.js player that the
-               // Tech has been initialized and is ready.
-               this.triggerReady();
-            }
-            this.trigger('loadstart');
-            this.trigger('loadeddata');
-            this.trigger('play');
-            this.trigger('playing');
-            this._hasPlayedAnyItem = true;
-            this._isMediaLoading = false;
-            this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
-         }.bind(this), this._triggerErrorEvent.bind(this));
+         .then(this.onLoadSessionSucces.bind(this), this._triggerErrorEvent.bind(this));
+   },
+
+   /**
+    * onLoadSessionSucces
+    */
+   onLoadSessionSucces: function() {
+      if (!this._hasPlayedAnyItem) {
+         // `triggerReady` is required here to notify the Video.js player that the
+         // Tech has been initialized and is ready.
+         this.triggerReady();
+      }
+
+      this.trigger('loadstart');
+      this.trigger('loadeddata');
+      this.trigger('play');
+      this.trigger('playing');
+      this.videojsPlayer.hasStarted(true);
+      this._hasPlayedAnyItem = true;
+      this._isMediaLoading = false;
+      clearTimeout(this.playStateValidationTimeout);
+      this.playStateValidationTimeout = window.setTimeout(this.validatePlayState.bind(this), 1000);
+      this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
+   },
+
+   /**
+    * play state validation
+    * making sure everything between cast and local player are in sync
+    */
+   validatePlayState: function() {
+      var textTrackDisplay = this.videojsPlayer.getChild('TextTrackDisplay');
+
+      this._triggerTimeUpdateEvent();
+      this._onPlayerStateChanged();
+      this._onChangeTrack();
+
+      if (textTrackDisplay) {
+         textTrackDisplay.hide();
+      }
    },
 
    /**
@@ -533,6 +635,20 @@ ChromecastTech = {
    },
 
    /**
+    * on dispose
+    * @private
+    */
+   _onDispose: function() {
+      var textTrackDisplay = this.videojsPlayer.getChild('TextTrackDisplay');
+
+      if (textTrackDisplay) {
+         textTrackDisplay.show();
+      }
+      clearTimeout(this.playStateValidationTimeout);
+      this._removeAllEventListeners();
+   },
+
+   /**
     * Removes all event listeners that were registered with global objects during the
     * lifetime of this Tech. See {@link _addEventListener} for more information about why
     * this is necessary.
@@ -742,10 +858,9 @@ module.exports = function(videojs) {
    ChromecastTechImpl.prototype.featuresFullscreenResize = true;
    ChromecastTechImpl.prototype.featuresTimeupdateEvents = true;
    ChromecastTechImpl.prototype.featuresProgressEvents = false;
-   // Text tracks are not supported in this version
    ChromecastTechImpl.prototype.featuresNativeTextTracks = false;
-   ChromecastTechImpl.prototype.featuresNativeAudioTracks = false;
-   ChromecastTechImpl.prototype.featuresNativeVideoTracks = false;
+   ChromecastTechImpl.prototype.featuresNativeAudioTracks = true;
+   ChromecastTechImpl.prototype.featuresNativeVideoTracks = true;
 
    // Give ChromecastTech class instances a reference to videojs
    ChromecastTechImpl.prototype.videojs = videojs;

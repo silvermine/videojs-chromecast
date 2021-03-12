@@ -3,17 +3,22 @@
 <head>
    <meta charset=utf-8 />
    <title>silvermine-videojs-chromecast Demo</title>
-   <link href="https://unpkg.com/video.js@6.1.0/dist/video-js.css" rel="stylesheet">
-   <script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.11.6/video-js.min.css" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.11.6/video.js" ></script>
    <script src="../../dist/silvermine-videojs-chromecast.min.js"></script>
    <link href="../../dist/silvermine-videojs-chromecast.css" rel="stylesheet">
-   <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+   <script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 </head>
 <body>
    <h1>Demo of <code>silvermine-videojs-chromecast</code></h1>
 
-   <video id="video_1" class="video-js vjs-default-skin" controls preload="auto" data-setup='{ "fluid": "true" }'>
-      <source src="http://www.caminandes.com/download/03_caminandes_llamigos_1080p.mp4" type="video/mp4">
+   <video crossorigin="anonymous" id="video_1" class="video-js vjs-default-skin"  controls preload="auto" data-setup='{ "fluid": "true" }'>
+      <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.webm" type="video/webm" />
+      <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.mp4" type="video/mp4" />
+      <track src="https://track-demonstration.glitch.me/chrome-subtitles-en.vtt" label="English captions"
+             kind="captions" srclang="en" default>
+      <track src="https://track-demonstration.glitch.me/chrome-subtitles-zh.vtt" label="中文字幕"
+             kind="captions" srclang="zh">
    </video>
 
    <script>
@@ -28,6 +33,7 @@
 
          player.chromecast();
       });
+
    </script>
 
 </body>

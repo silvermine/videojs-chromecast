@@ -48,7 +48,6 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
       this.player.on('dispose', this._removeCastContextEventListeners.bind(this));
 
       this._notifyPlayerOfDevicesAvailabilityChange(this.getCastContext().getCastState());
-
       this.remotePlayer = new cast.framework.RemotePlayer();
       this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
    },
@@ -88,6 +87,37 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
    _onSessionStateChange: function(event) {
       if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
          this.player.trigger('chromecastDisconnected');
+         this._reloadTech();
+      } else if (event.sessionState === cast.framework.SessionState.SESSION_RESUMED) {
+         this.onSessionResumed();
+      }
+   },
+
+   /**
+    * generate session source
+    * @private
+    */
+   reloadTechWithSources: function(mediaStatus) {
+      var currentTime = mediaStatus.currentTime,
+          isPlaying = mediaStatus.playerState === 'PLAYING',
+          sources = [ { id: mediaStatus.media.contentId, src: mediaStatus.media.contentUrl, type: mediaStatus.media.contentType } ];
+
+      this._reloadTech(currentTime, isPlaying, sources);
+   },
+
+   /**
+    * on session resumed
+    */
+   onSessionResumed: function() {
+      var instance = cast.framework.CastContext.getInstance(),
+          castSession = instance.getCurrentSession(),
+          mediaStatus = castSession.getMediaSession();
+
+      hasConnected = true;
+
+      if (mediaStatus) {
+         this.reloadTechWithSources(mediaStatus);
+      } else {
          this._reloadTech();
       }
    },
@@ -168,24 +198,24 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
     *
     * @private
     */
-   _reloadTech: function() {
+   _reloadTech: function(sessionCurrentTime, sessionPlaying, sessionSources) {
       var player = this.player,
-          currentTime = player.currentTime(),
-          wasPaused = player.paused(),
-          sources = player.currentSources();
+          currentTime = sessionCurrentTime || player.currentTime(),
+          wasPlaying = sessionPlaying || !player.paused(),
+          sources = sessionSources || player.currentSources();
 
+      // eslint-disable-next-line no-console
       // Reload the current source(s) to re-lookup and use the currently available Tech.
       // The chromecast Tech gets used if `ChromecastSessionManager.isChromecastConnected`
       // is true (effectively, if a chromecast session is currently in progress),
       // otherwise Video.js continues to search through the Tech list for other eligible
       // Tech to use, such as the HTML5 player.
       player.src(sources);
-
       player.ready(function() {
-         if (wasPaused) {
-            player.pause();
-         } else {
+         if (wasPlaying) {
             player.play();
+         } else {
+            player.pause();
          }
          player.currentTime(currentTime || 0);
       });
