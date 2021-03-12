@@ -859,8 +859,8 @@ module.exports = function(videojs) {
    ChromecastTechImpl.prototype.featuresTimeupdateEvents = true;
    ChromecastTechImpl.prototype.featuresProgressEvents = false;
    ChromecastTechImpl.prototype.featuresNativeTextTracks = false;
-   ChromecastTechImpl.prototype.featuresNativeAudioTracks = true;
-   ChromecastTechImpl.prototype.featuresNativeVideoTracks = true;
+   ChromecastTechImpl.prototype.featuresNativeAudioTracks = false;
+   ChromecastTechImpl.prototype.featuresNativeVideoTracks = false;
 
    // Give ChromecastTech class instances a reference to videojs
    ChromecastTechImpl.prototype.videojs = videojs;
