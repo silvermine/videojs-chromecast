@@ -3,17 +3,19 @@
 <head>
    <meta charset=utf-8 />
    <title>silvermine-videojs-chromecast Demo</title>
-   <link href="https://unpkg.com/video.js@6.1.0/dist/video-js.css" rel="stylesheet">
-   <script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
-   <script src="../../dist/silvermine-videojs-chromecast.min.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.11.6/video-js.min.css" integrity="sha512-fteJK9ZlHSFXwfkV3ASsRd6CLzPIK1C5wCpbDfYJaRmjUiezOU28xJwrALF+agINF8c6do/EOXXOqI2IDPUwQw==" crossorigin="anonymous" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.11.6/video.js" ></script>
+   <script src="../../dist/silvermine-videojs-chromecast.js"></script>
    <link href="../../dist/silvermine-videojs-chromecast.css" rel="stylesheet">
-   <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+   <script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 </head>
 <body>
    <h1>Demo of <code>silvermine-videojs-chromecast</code></h1>
 
-   <video id="video_1" class="video-js vjs-default-skin" controls preload="auto" data-setup='{ "fluid": "true" }'>
-      <source src="http://www.caminandes.com/download/03_caminandes_llamigos_1080p.mp4" type="video/mp4">
+   <video crossorigin="anonymous" id="video_1" class="video-js vjs-default-skin"  controls preload="auto" data-setup='{ "fluid": "true" }'>
+      <source id="1" src=https://staging.dev.tradecast.eu/cdn/produced_content/c71a72a4fa21-1995ef5942fa3b0d/video.mp4?Expires=1615455469&Key-Pair-Id=APKAICVWR336YGCJD6GQ&Signature=rVUlNDdOVoZ0lqGNm9Aaakpzg5R~FI1HSi6NTn7vtpYfNTItblacxEjFwY0hfIH7O~D1YkpU5MA29-FUnoybIJdDoZKD8Lekc4CGkmZjsIqi9q4SS2bmsaTUde5bgfJsMe5fUar8g~pycNXbXr~9OZLcywv7LpRCls7y84Lv-nYcqgUez10okS-ATtouW1sLtS-2~EBUUfESAyPizGlBmnxX0iH3WugMTxGHR4MtyEMZa5eF3GASgcBZIXEnDtYaN6QwFgKqarlhZvpI6tecixL2kb5VAMTqlhQBOyoYn9Q-nRI73J3fWNoWBB68BlutNrELDyhIeqIGcVZsXcW7YQ__" type="video/mp4">
+      <track id="2" default kind="captions" srclang="en" src="https://staging.dev.tradecast.eu/cdn/subtitles/80/0b28bf65-0b01-43f4-b67e-77476ce4ea7a.vtt" />
+      <track id="3" kind="captions" srclang="nl" src="https://staging.dev.tradecast.eu/cdn/subtitles/80/7856b1a0-ebd4-4acc-9821-19d42a791d77.vtt" />
    </video>
 
    <script>
@@ -21,12 +23,15 @@
 
       options = {
          techOrder: [ 'chromecast', 'html5' ],
+         plugins: {
+            chromecast: {
+               // receiverAppID: 'CC1AD845', // this is the default receiver id
+            }
+         }
       };
 
       videojs('video_1', options, function() {
-         var player = this;
 
-         player.chromecast();
       });
    </script>
 

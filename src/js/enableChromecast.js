@@ -28,6 +28,7 @@ function configureCastContext(options) {
       // must end any existing session before trying to cast from this player instance.
       autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
    });
+
 }
 
 /**
@@ -42,8 +43,8 @@ function onChromecastRequested(player) {
 }
 
 /**
- * Adds the Chromecast button to the player's control bar, if one does not already exist,
- * then starts listening for the `chromecastRequested` event.
+ * Adds the Chromecast bning foutton to the player's control bar, if one does not already
+ * exist, then starts lister the `chromecastRequested` event.
  *
  * @private
  * @param player {object} a Video.js player instance
