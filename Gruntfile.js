@@ -71,12 +71,35 @@ module.exports = function(grunt) {
 
       eslint: {
          target: config.js.all,
+         options: {
+            fix: grunt.option('fix'),
+         },
       },
 
       browserify: {
          main: {
             src: config.js.browserMainFile,
             dest: config.dist.js.bundle,
+            options: {
+               transform: [
+                  [
+                     'babelify',
+                     {
+                        presets: [
+                           [
+                              '@babel/preset-env',
+                              {
+                                 debug: true,
+                                 useBuiltIns: 'usage',
+                                 shippedProposals: true,
+                                 corejs: 3,
+                              },
+                           ],
+                        ],
+                     },
+                  ],
+               ],
+            },
          },
       },
 

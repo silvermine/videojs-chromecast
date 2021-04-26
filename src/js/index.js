@@ -1,6 +1,4 @@
 /* eslint-disable global-require */
-'use strict';
-
 var _ = require('underscore'),
     preloadWebComponents = require('./preloadWebComponents'),
     createChromecastButton = require('./components/ChromecastButton'),
