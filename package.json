@@ -28,7 +28,6 @@
   "homepage": "https://github.com/silvermine/videojs-chromecast#readme",
   "dependencies": {
     "class.extend": "0.9.1",
-    "underscore": "1.9.1",
     "webcomponents.js": "git+https://git@github.com/webcomponents/webcomponentsjs.git#v0.7.24"
   },
   "devDependencies": {
