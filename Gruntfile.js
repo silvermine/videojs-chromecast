@@ -96,11 +96,11 @@ module.exports = function(grunt) {
          },
       },
 
-      sasslint: {
+      stylelint: {
          options: {
-            configFile: join(__dirname, 'node_modules', '@silvermine/sass-lint-config', 'sass-lint.yml'),
+            configFile: join(__dirname, 'node_modules', '@silvermine', 'standardization', '.stylelintrc.yml'),
          },
-         target: config.sass.all,
+         src: config.sass.all,
       },
 
       sass: {
@@ -162,9 +162,9 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-eslint');
    grunt.loadNpmTasks('grunt-sass');
    grunt.loadNpmTasks('grunt-postcss');
-   grunt.loadNpmTasks('grunt-sass-lint');
+   grunt.loadNpmTasks('grunt-stylelint');
 
-   grunt.registerTask('standards', [ 'eslint', 'sasslint' ]);
+   grunt.registerTask('standards', [ 'eslint', 'stylelint' ]);
    grunt.registerTask('build-js', [ 'browserify', 'uglify' ]);
    grunt.registerTask('build-css', [ 'sass', 'postcss:styles' ]);
    grunt.registerTask('build', [ 'build-js', 'build-css', 'copy:images' ]);

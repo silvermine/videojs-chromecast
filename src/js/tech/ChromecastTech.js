@@ -2,7 +2,6 @@
 
 var ChromecastSessionManager = require('../chromecast/ChromecastSessionManager'),
     ChromecastTechUI = require('./ChromecastTechUI'),
-    _ = require('underscore'),
     SESSION_TIMEOUT = 10 * 1000, // milliseconds
     ChromecastTech;
 
@@ -52,9 +51,9 @@ ChromecastTech = {
       this.on('dispose', this._removeAllEventListeners.bind(this));
 
       this._hasPlayedAnyItem = false;
-      this._requestTitle = options.requestTitleFn || _.noop;
-      this._requestSubtitle = options.requestSubtitleFn || _.noop;
-      this._requestCustomData = options.requestCustomDataFn || _.noop;
+      this._requestTitle = options.requestTitleFn || function() { /* noop */ };
+      this._requestSubtitle = options.requestSubtitleFn || function() { /* noop */ };
+      this._requestCustomData = options.requestCustomDataFn || function() { /* noop */ };
       // See `currentTime` function
       this._initialStartTime = options.startTime || 0;
 
@@ -558,16 +557,23 @@ ChromecastTech = {
     * @private
     */
    _removeEventListener: function(listener) {
-      var index;
+      var index = -1,
+          pass = false,
+          i;
 
       listener.target.removeEventListener(listener.type, listener.listener);
 
-      index = _.findIndex(this._eventListeners, function(registeredListener) {
-         return registeredListener.target === listener.target &&
-            registeredListener.type === listener.type &&
-            registeredListener.callback === listener.callback &&
-            registeredListener.context === listener.context;
-      });
+      for (i = 0; i < this._eventListeners.length; i++) {
+         pass = this._eventListeners[i].target === listener.target &&
+               this._eventListeners[i].type === listener.type &&
+               this._eventListeners[i].callback === listener.callback &&
+               this._eventListeners[i].context === listener.context;
+
+         if (pass) {
+            index = i;
+            break;
+         }
+      }
 
       if (index !== -1) {
          this._eventListeners.splice(index, 1);

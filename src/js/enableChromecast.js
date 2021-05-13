@@ -5,7 +5,6 @@
  */
 
 var ChromecastSessionManager = require('./chromecast/ChromecastSessionManager'),
-    _ = require('underscore'),
     CHECK_AVAILABILITY_INTERVAL = 1000, // milliseconds
     CHECK_AVAILABILITY_TIMEOUT = 30 * 1000; // milliseconds
 
@@ -182,7 +181,7 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
  */
 module.exports = function(videojs) {
    videojs.registerPlugin('chromecast', function(options) {
-      var pluginOptions = _.extend({ addButtonToControlBar: true }, options || {});
+      var pluginOptions = Object.assign({ addButtonToControlBar: true }, options || {});
 
       // `this` is an instance of a Video.js Player.
       // Wait until the player is "ready" so that the player's control bar component has

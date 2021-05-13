@@ -15,7 +15,7 @@ $chromecast-poster-max-height: 180px !default;
    overflow: hidden;
    .vjs-tech-chromecast-poster {
       &::after {
-         content: " ";
+         content: ' ';
          display: block;
          height: 2px;
          width: $chromecast-poster-width;

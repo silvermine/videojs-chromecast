@@ -3,3 +3,5 @@
 .npmignore
 Gruntfile.js
 tests/**
+.nyc_output
+coverage

@@ -1,8 +1,7 @@
 /* eslint-disable global-require */
 'use strict';
 
-var _ = require('underscore'),
-    preloadWebComponents = require('./preloadWebComponents'),
+var preloadWebComponents = require('./preloadWebComponents'),
     createChromecastButton = require('./components/ChromecastButton'),
     createChromecastTech = require('./tech/ChromecastTech'),
     enableChromecast = require('./enableChromecast');
@@ -23,7 +22,7 @@ var _ = require('underscore'),
  * @see module:ChromecastButton
  */
 module.exports = function(videojs, userOpts) {
-   var options = _.defaults(_.extend({}, userOpts), { preloadWebComponents: false });
+   var options = Object.assign({ preloadWebComponents: false }, userOpts);
 
    if (options.preloadWebComponents) {
       preloadWebComponents();
