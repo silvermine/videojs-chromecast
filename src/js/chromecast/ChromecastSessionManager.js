@@ -40,6 +40,9 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
    init: function(player) {
       this.player = player;
 
+      this._sessionListener = this._onSessionStateChange.bind(this);
+      this._castListener = this._onCastStateChange.bind(this);
+
       this._addCastContextEventListeners();
 
       // Remove global event listeners when this player instance is destroyed to prevent
@@ -61,8 +64,8 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
       var sessionStateChangedEvt = cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
           castStateChangedEvt = cast.framework.CastContextEventType.CAST_STATE_CHANGED;
 
-      this.getCastContext().addEventListener(sessionStateChangedEvt, this._onSessionStateChange.bind(this));
-      this.getCastContext().addEventListener(castStateChangedEvt, this._onCastStateChange.bind(this));
+      this.getCastContext().addEventListener(sessionStateChangedEvt, this._sessionListener);
+      this.getCastContext().addEventListener(castStateChangedEvt, this._castListener);
    },
 
    /**
@@ -75,8 +78,8 @@ ChromecastSessionManager = Class.extend(/** @lends ChromecastSessionManager.prot
       var sessionStateChangedEvt = cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
           castStateChangedEvt = cast.framework.CastContextEventType.CAST_STATE_CHANGED;
 
-      this.getCastContext().removeEventListener(sessionStateChangedEvt);
-      this.getCastContext().removeEventListener(castStateChangedEvt);
+      this.getCastContext().removeEventListener(sessionStateChangedEvt, this._sessionListener);
+      this.getCastContext().removeEventListener(castStateChangedEvt, this._castListener);
    },
 
    /**
