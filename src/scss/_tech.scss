@@ -21,7 +21,7 @@ $chromecast-poster-max-height: 180px !default;
          width: $chromecast-poster-width;
          background-color: $chromecast-color-main;
          position: absolute;
-         left: calc(50% - #{$chromecast-poster-width / 2});
+         left: calc(50% - #{$chromecast-poster-width * 0.5});
       }
    }
    .vjs-tech-chromecast-poster-img {
