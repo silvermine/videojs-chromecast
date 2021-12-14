@@ -84,6 +84,40 @@ class ChromecastSessionManager {
       if (event.sessionState === cast.framework.SessionState.SESSION_ENDED) {
          this.player.trigger('chromecastDisconnected');
          this._reloadTech();
+      } else if (event.sessionState === cast.framework.SessionState.SESSION_RESUMED) {
+         this._onSessionResumed();
+      }
+   }
+
+   /**
+    * Reload tech while keeping current media sources.
+    *
+    * @private
+    */
+   _reloadTechWithSources(mediaStatus) {
+      var currentTime = mediaStatus.currentTime,
+          isPlaying = mediaStatus.playerState === 'PLAYING',
+          sources = [ { id: mediaStatus.media.contentId, src: mediaStatus.media.contentUrl, type: mediaStatus.media.contentType } ];
+
+      this._reloadTech(currentTime, isPlaying, sources);
+   }
+
+   /**
+    * Handle the CastContext's `SESSION_RESUMED` event.
+    *
+    * @private
+    */
+   _onSessionResumed() {
+      var instance = cast.framework.CastContext.getInstance(),
+          castSession = instance.getCurrentSession(),
+          mediaStatus = castSession.getMediaSession();
+
+      ChromecastSessionManager.hasConnected = true;
+
+      if (mediaStatus) {
+         this._reloadTechWithSources(mediaStatus);
+      } else {
+         this._reloadTech();
       }
    }
 
@@ -163,11 +197,11 @@ class ChromecastSessionManager {
     *
     * @private
     */
-   _reloadTech() {
+   _reloadTech(sessionCurrentTime, sessionPlaying, sessionSources) {
       var player = this.player,
-          currentTime = player.currentTime(),
-          wasPaused = player.paused(),
-          sources = player.currentSources();
+          currentTime = sessionCurrentTime || player.currentTime(),
+          wasPlaying = sessionPlaying || !player.paused(),
+          sources = sessionSources || player.currentSources();
 
       // Reload the current source(s) to re-lookup and use the currently available Tech.
       // The chromecast Tech gets used if `ChromecastSessionManager.isChromecastConnected`
@@ -175,12 +209,11 @@ class ChromecastSessionManager {
       // otherwise Video.js continues to search through the Tech list for other eligible
       // Tech to use, such as the HTML5 player.
       player.src(sources);
-
       player.ready(function() {
-         if (wasPaused) {
-            player.pause();
-         } else {
+         if (wasPlaying) {
             player.play();
+         } else {
+            player.pause();
          }
          player.currentTime(currentTime || 0);
       });
