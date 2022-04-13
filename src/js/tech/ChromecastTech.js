@@ -52,6 +52,9 @@ ChromecastTech = {
       this._requestTitle = options.requestTitleFn || function() { /* noop */ };
       this._requestSubtitle = options.requestSubtitleFn || function() { /* noop */ };
       this._requestCustomData = options.requestCustomDataFn || function() { /* noop */ };
+      this._requestLoadSource = options.requestLoadSourceFn || function(source) {
+         return source;
+      };
       // See `currentTime` function
       this._initialStartTime = options.startTime || 0;
 
@@ -86,7 +89,7 @@ ChromecastTech = {
       }
       if (this.ended() && !this._isMediaLoading) {
          // Restart the current item from the beginning
-         this._playSource({ src: this.videojsPlayer.src() }, 0);
+         this._playSource(this.videojsPlayer.currentSource(), 0);
       } else {
          this._remotePlayerController.playOrPause();
       }
@@ -151,7 +154,8 @@ ChromecastTech = {
     */
    _playSource: function(source, startTime) {
       var castSession = this._getCastSession(),
-          mediaInfo = new chrome.cast.media.MediaInfo(source.src, source.type),
+          loadSource = this._requestLoadSource(source),
+          mediaInfo = new chrome.cast.media.MediaInfo(loadSource.src, loadSource.type),
           title = this._requestTitle(source),
           subtitle = this._requestSubtitle(source),
           customData = this._requestCustomData(source),

@@ -154,14 +154,20 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
  * playerOptions = {
  *    chromecast: {
  *       requestTitleFn: function(source) {
- *          return titles[source.url];
+ *          return titles[source.src];
  *       },
  *       requestSubtitleFn: function(source) {
- *          return subtitles[source.url];
+ *          return subtitles[source.src];
  *       },
  *       requestCustomDataFn: function(source) {
- *          return customData[source.url];
- *       }
+ *          return customData[source.src];
+ *       },
+ *       requestLoadSourceFn: function(source) {
+ *          return {
+ *             src: mpegDashStreams[source.src],
+ *             type: 'application/dash+xml',
+ *          };
+ *       },
  *    }
  * };
  *
