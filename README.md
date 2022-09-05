@@ -163,8 +163,8 @@ player.chromecast(); // initializes the Chromecast plugin
      position from the end of the control bar. Note that it's likely not all child components
      of the control bar are visible.
    * **`plugins.chromecast.addCastLabelToButton`** (default: `false`) - by default, the Chromecast
-    button component will display only an icon. Setting `addCastLabelToButton` to `true` will
-    display a label titled `"Cast"` alongside the default icon.
+     button component will display only an icon. Setting `addCastLabelToButton` to `true` will
+     display a label titled `"Cast"` alongside the default icon.
 
 ##### Chromecast Tech configuration
 
@@ -236,10 +236,10 @@ options = {
 The `ChromecastButton` component has two translated strings: "Open Chromecast menu" and "Cast".
 
    * The "Open Chromecast menu" string appears in both of the standard places for Button
-    component accessibility text: inside the `.vjs-control-text` span and as the `<button>`
-    element's `title` attribute.
+     component accessibility text: inside the `.vjs-control-text` span and as the `<button>`
+     element's `title` attribute.
    * The "Cast" string appears in an optional label within the Button component: inside the
-    `.vjs-chromecast-button-label` span.
+     `.vjs-chromecast-button-label` span.
 
 To localize the Chromecast button strings, follow the steps in the
 [Video.js Languages tutorial][videojs-translation] to add `"Open Chromecast menu"`
