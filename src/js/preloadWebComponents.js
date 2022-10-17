@@ -1,9 +1,5 @@
-'use strict';
-
-var _ = require('underscore');
-
 function doesUserAgentContainString(str) {
-   return _.isString(window.navigator.userAgent) && window.navigator.userAgent.indexOf(str) >= 0;
+   return typeof window.navigator.userAgent === 'string' && window.navigator.userAgent.indexOf(str) >= 0;
 }
 
 // For information as to why this is needed, please see:

@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * The ChromecastButton module contains both the ChromecastButton class definition and
  * the function used to register the button as a Video.js Component.
@@ -27,15 +25,13 @@ ChromecastButton = {
     * @extends external:Button
     * @param player {Player} the video.js player instance
     */
-   constructor: function(player) {
+   constructor: function(player, options) {
       this.constructor.super_.apply(this, arguments);
 
       player.on('chromecastConnected', this._onChromecastConnected.bind(this));
       player.on('chromecastDisconnected', this._onChromecastDisconnected.bind(this));
       player.on('chromecastDevicesAvailable', this._onChromecastDevicesAvailable.bind(this));
       player.on('chromecastDevicesUnavailable', this._onChromecastDevicesUnavailable.bind(this));
-
-      this.controlText('Open Chromecast menu');
 
       // Use the initial state of `hasAvailableDevices` to call the corresponding event
       // handlers because the corresponding events may have already been emitted before
@@ -44,6 +40,18 @@ ChromecastButton = {
          this._onChromecastDevicesAvailable();
       } else {
          this._onChromecastDevicesUnavailable();
+      }
+
+      if (options.addCastLabelToButton) {
+         this.el().classList.add('vjs-chromecast-button-lg');
+
+         this._labelEl = document.createElement('span');
+         this._labelEl.classList.add('vjs-chromecast-button-label');
+         this._labelEl.textContent = this.localize('Cast');
+
+         this.el().appendChild(this._labelEl);
+      } else {
+         this.controlText('Open Chromecast menu');
       }
    },
 

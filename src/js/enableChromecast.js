@@ -1,11 +1,8 @@
-'use strict';
-
 /**
  * @module enableChromecast
  */
 
 var ChromecastSessionManager = require('./chromecast/ChromecastSessionManager'),
-    _ = require('underscore'),
     CHECK_AVAILABILITY_INTERVAL = 1000, // milliseconds
     CHECK_AVAILABILITY_TIMEOUT = 30 * 1000; // milliseconds
 
@@ -50,9 +47,18 @@ function onChromecastRequested(player) {
  * @param options {object} the plugin options
  */
 function setUpChromecastButton(player, options) {
+   var indexOpt;
+
    // Ensure Chromecast button exists
    if (options.addButtonToControlBar && !player.controlBar.getChild('chromecastButton')) {
-      player.controlBar.addChild('chromecastButton', options);
+      // Figure out Chromecast button's index
+      indexOpt = player.controlBar.children().length;
+      if (typeof options.buttonPositionIndex !== 'undefined') {
+         indexOpt = options.buttonPositionIndex >= 0
+            ? options.buttonPositionIndex
+            : player.controlBar.children().length + options.buttonPositionIndex;
+      }
+      player.controlBar.addChild('chromecastButton', options, indexOpt);
    }
    // Respond to requests for casting. The ChromecastButton component triggers this event
    // when the user clicks the Chromecast button.
@@ -173,7 +179,7 @@ function waitUntilChromecastAPIsAreAvailable(player, options) {
  */
 module.exports = function(videojs) {
    videojs.registerPlugin('chromecast', function(options) {
-      var pluginOptions = _.extend({ addButtonToControlBar: true }, options || {});
+      var pluginOptions = Object.assign({ addButtonToControlBar: true }, options || {});
 
       // `this` is an instance of a Video.js Player.
       // Wait until the player is "ready" so that the player's control bar component has

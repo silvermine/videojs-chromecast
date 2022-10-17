@@ -1,8 +1,5 @@
-'use strict';
-
 var ChromecastSessionManager = require('../chromecast/ChromecastSessionManager'),
     ChromecastTechUI = require('./ChromecastTechUI'),
-    _ = require('underscore'),
     SESSION_TIMEOUT = 10 * 1000, // milliseconds
     ChromecastTech;
 
@@ -10,7 +7,7 @@ var ChromecastSessionManager = require('../chromecast/ChromecastSessionManager')
  * @module ChomecastTech
  */
 
- /**
+/**
  * The Video.js Tech class is the base class for classes that provide media playback
  * technology implementations to Video.js such as HTML5, Flash and HLS.
  *
@@ -52,9 +49,9 @@ ChromecastTech = {
       this.on('dispose', this._removeAllEventListeners.bind(this));
 
       this._hasPlayedAnyItem = false;
-      this._requestTitle = options.requestTitleFn || _.noop;
-      this._requestSubtitle = options.requestSubtitleFn || _.noop;
-      this._requestCustomData = options.requestCustomDataFn || _.noop;
+      this._requestTitle = options.requestTitleFn || function() { /* noop */ };
+      this._requestSubtitle = options.requestSubtitleFn || function() { /* noop */ };
+      this._requestCustomData = options.requestCustomDataFn || function() { /* noop */ };
       // See `currentTime` function
       this._initialStartTime = options.startTime || 0;
 
@@ -168,9 +165,14 @@ ChromecastTech = {
       mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
       mediaInfo.metadata.title = title;
       mediaInfo.metadata.subtitle = subtitle;
+      mediaInfo.streamType = this.videojsPlayer.liveTracker && this.videojsPlayer.liveTracker.isLive()
+         ? chrome.cast.media.StreamType.LIVE
+         : chrome.cast.media.StreamType.BUFFERED;
+
       if (poster) {
          mediaInfo.metadata.images = [ { url: poster } ];
       }
+
       if (customData) {
          mediaInfo.customData = customData;
       }
@@ -197,6 +199,7 @@ ChromecastTech = {
             this.trigger('playing');
             this._hasPlayedAnyItem = true;
             this._isMediaLoading = false;
+            this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
          }.bind(this), this._triggerErrorEvent.bind(this));
    },
 
@@ -273,6 +276,10 @@ ChromecastTech = {
     */
    ended: function() {
       var mediaSession = this._getMediaSession();
+
+      if (!mediaSession && this._hasMediaSessionEnded) {
+         return true;
+      }
 
       return mediaSession ? (mediaSession.idleReason === chrome.cast.media.IdleReason.FINISHED) : false;
    },
@@ -458,6 +465,13 @@ ChromecastTech = {
    },
 
    /**
+    * Does nothing. Satisfies calls to the missing preload method.
+    */
+   preload: function() {
+      // Not supported
+   },
+
+   /**
     * Causes the Tech to begin loading the current source. `load` is not supported in this
     * ChromecastTech because setting the source on the `Chromecast` automatically causes
     * it to begin loading.
@@ -546,16 +560,23 @@ ChromecastTech = {
     * @private
     */
    _removeEventListener: function(listener) {
-      var index;
+      var index = -1,
+          pass = false,
+          i;
 
       listener.target.removeEventListener(listener.type, listener.listener);
 
-      index = _.findIndex(this._eventListeners, function(registeredListener) {
-         return registeredListener.target === listener.target &&
-            registeredListener.type === listener.type &&
-            registeredListener.callback === listener.callback &&
-            registeredListener.context === listener.context;
-      });
+      for (i = 0; i < this._eventListeners.length; i++) {
+         pass = this._eventListeners[i].target === listener.target &&
+               this._eventListeners[i].type === listener.type &&
+               this._eventListeners[i].callback === listener.callback &&
+               this._eventListeners[i].context === listener.context;
+
+         if (pass) {
+            index = i;
+            break;
+         }
+      }
 
       if (index !== -1) {
          this._eventListeners.splice(index, 1);
@@ -586,6 +607,19 @@ ChromecastTech = {
       } else if (playerState === states.BUFFERING) {
          this.trigger('waiting');
       }
+   },
+
+   /**
+    * Handles Chromecast MediaSession state change events. The only property sent to this
+    * event is whether the session is alive. This is useful for determining if an item has
+    * ended as the MediaSession will fire this event with `false` then be immediately
+    * destroyed. This means that we cannot trust `idleReason` to show whether an item has
+    * ended since we may no longer have access to the MediaSession.
+    *
+    * @private
+    */
+   _onMediaSessionStatusChanged: function(isAlive) {
+      this._hasMediaSessionEnded = !!isAlive;
    },
 
    /**
@@ -712,8 +746,8 @@ module.exports = function(videojs) {
 
    // Required for Video.js Tech implementations.
    // TODO Consider a more comprehensive check based on mimetype.
-   ChromecastTechImpl.canPlaySource = ChromecastSessionManager.isChromecastConnected.bind(ChromecastSessionManager);
-   ChromecastTechImpl.isSupported = ChromecastSessionManager.isChromecastConnected.bind(ChromecastSessionManager);
+   ChromecastTechImpl.canPlaySource = () => { return ChromecastSessionManager.isChromecastConnected(); };
+   ChromecastTechImpl.isSupported = () => { return ChromecastSessionManager.isChromecastConnected(); };
 
    ChromecastTechImpl.prototype.featuresVolumeControl = true;
    ChromecastTechImpl.prototype.featuresPlaybackRate = false;
