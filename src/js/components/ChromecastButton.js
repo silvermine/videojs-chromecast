@@ -47,7 +47,7 @@ ChromecastButton = {
 
          this._labelEl = document.createElement('span');
          this._labelEl.classList.add('vjs-chromecast-button-label');
-         this._labelEl.textContent = this.localize('Cast');
+         this._updateCastLabelText();
 
          this.el().appendChild(this._labelEl);
       } else {
@@ -62,7 +62,9 @@ ChromecastButton = {
     * @see {@link http://docs.videojs.com/Button.html#buildCSSClass|Button#buildCSSClass}
     */
    buildCSSClass: function() {
-      return 'vjs-chromecast-button ' + (this._isChromecastConnected ? 'vjs-chromecast-casting-state ' : '') +
+      return 'vjs-chromecast-button ' +
+         (this._isChromecastConnected ? 'vjs-chromecast-casting-state ' : '') +
+         (this.options_.addCastLabelToButton ? 'vjs-chromecast-button-lg ' : '') +
          this.constructor.super_.prototype.buildCSSClass();
    },
 
@@ -87,6 +89,7 @@ ChromecastButton = {
    _onChromecastConnected: function() {
       this._isChromecastConnected = true;
       this._reloadCSSClasses();
+      this._updateCastLabelText();
    },
 
    /**
@@ -97,6 +100,7 @@ ChromecastButton = {
    _onChromecastDisconnected: function() {
       this._isChromecastConnected = false;
       this._reloadCSSClasses();
+      this._updateCastLabelText();
    },
 
    /**
@@ -128,6 +132,19 @@ ChromecastButton = {
          return;
       }
       this.el_.className = this.buildCSSClass();
+   },
+
+   /**
+    * Updates the optional cast label text based on whether the chromecast is connected
+    * or disconnected.
+    *
+    * @private
+    */
+   _updateCastLabelText: function() {
+      if (!this._labelEl) {
+         return;
+      }
+      this._labelEl.textContent = this._isChromecastConnected ? this.localize('Disconnect Cast') : this.localize('Cast');
    },
 };
 
