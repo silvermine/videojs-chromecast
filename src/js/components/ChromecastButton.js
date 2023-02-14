@@ -176,8 +176,7 @@ ChromecastButton = {
  * @see http://docs.videojs.com/module-videojs.html#~registerPlugin
  */
 module.exports = function(videojs) {
-   var ChromecastButtonImpl;
+   class ChromecastButtonImpl extends videojs.getComponent('Button') {ChromecastButton};
 
-   ChromecastButtonImpl = videojs.extend(videojs.getComponent('Button'), ChromecastButton);
    videojs.registerComponent('chromecastButton', ChromecastButtonImpl);
 };

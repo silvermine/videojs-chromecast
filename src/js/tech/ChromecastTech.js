@@ -738,10 +738,9 @@ ChromecastTech = {
  * @see http://docs.videojs.com/Tech.html#.registerTech
  */
 module.exports = function(videojs) {
-   var Tech = videojs.getComponent('Tech'),
-       ChromecastTechImpl;
+   var Tech = videojs.getComponent('Tech');
 
-   ChromecastTechImpl = videojs.extend(Tech, ChromecastTech);
+   class ChromecastTechImpl extends Tech {ChromecastTech};
 
    // Required for Video.js Tech implementations.
    // TODO Consider a more comprehensive check based on mimetype.
