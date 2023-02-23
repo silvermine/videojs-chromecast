@@ -11,7 +11,7 @@ describe('ChromecastTech', function() {
    it('should not call videojs.extend', function() {
       const videoJsSpy = {
          extend: function() {
-            expect().fail('videojs.extends is deprecated');
+            expect().fail('videojs.extend is deprecated');
          },
          getComponent: function() {
             return TechComponentStub;
