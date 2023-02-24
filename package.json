@@ -68,6 +68,6 @@
     "sinon": "2.3.5"
   },
   "peerDependencies": {
-    "video.js": ">= 6 < 8"
+    "video.js": ">= 6 < 9"
   }
 }
