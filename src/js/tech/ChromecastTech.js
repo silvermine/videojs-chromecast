@@ -75,8 +75,12 @@ module.exports = function(videojs) {
          this._requestTitle = options.requestTitleFn || function() { /* noop */ };
          this._requestSubtitle = options.requestSubtitleFn || function() { /* noop */ };
          this._requestCustomData = options.requestCustomDataFn || function() { /* noop */ };
+         this._modifyLoadRequestFn = options.modifyLoadRequestFn || function() { /* noop */ };
          // See `currentTime` function
          this._initialStartTime = options.startTime || 0;
+         this._isScrubbing = false;
+         this._isSeeking = false;
+         this._scrubbingTime = this._initialStartTime;
 
          this._playSource(options.source, this._initialStartTime);
          this.ready(function() {
@@ -209,6 +213,7 @@ module.exports = function(videojs) {
          request = new chrome.cast.media.LoadRequest(mediaInfo);
          request.autoplay = true;
          request.currentTime = startTime;
+         request = this._modifyLoadRequestFn(request);
 
          this._isMediaLoading = true;
          this._hasPlayedCurrentItem = false;
@@ -238,6 +243,10 @@ module.exports = function(videojs) {
        * @see {@link http://docs.videojs.com/Tech.html#setCurrentTime}
        */
       setCurrentTime(time) {
+         if (this.scrubbing()) {
+            this._scrubbingTime = time;
+            return false;
+         }
          var duration = this.duration();
 
          if (time > duration || !this._remotePlayer.canSeek) {
@@ -246,9 +255,34 @@ module.exports = function(videojs) {
          // Seeking to any place within (approximately) 1 second of the end of the item
          // causes the Video.js player to get stuck in a BUFFERING state. To work around
          // this, we only allow seeking to within 1 second of the end of an item.
-         this._remotePlayer.currentTime = Math.min(duration - 1, time);
-         this._remotePlayerController.seek();
+         this._isSeeking = true;
+         setTimeout(() => {
+            // Seeking to any place within (approximately) 1 second of the end of the item
+            // causes the Video.js player to get stuck in a BUFFERING state. To work around
+            // this, we only allow seeking to within 1 second of the end of an item.
+            this._remotePlayer.currentTime = Math.min(duration - 1, time);
+            this._remotePlayerController.seek();
+            this._isSeeking = false;
+         }, 500);
          this._triggerTimeUpdateEvent();
+      }
+
+      seeking() {
+         return false;
+      }
+
+      scrubbing() {
+         return this._isScrubbing;
+      }
+   
+      setScrubbing(newValue) {
+         if (newValue === true) {
+            this._scrubbingTime = this.currentTime();
+            this._isScrubbing = true;
+         } else {
+            this._isScrubbing = false;
+            this.setCurrentTime(this._scrubbingTime);
+         }
       }
 
       /**
@@ -268,6 +302,9 @@ module.exports = function(videojs) {
          // chromecast plays its first item.
          if (!this._hasPlayedAnyItem) {
             return this._initialStartTime;
+         }
+         if (this.scrubbing() || this.seeking()) {
+            return this._scrubbingTime;
          }
          return this._remotePlayer.currentTime;
       }
