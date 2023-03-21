@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [our coding standards][commit-messages] for commit guidelines.
 
+### [1.4.1](https://github.com/silvermine/videojs-chromecast/compare/v1.4.0...v1.4.1) (2023-03-21)
+
+
+### Bug Fixes
+
+* remove deprecated `.extend` method ([994b5b9](https://github.com/silvermine/videojs-chromecast/commit/994b5b9ae6df89f657e2ff4a920056826094b54f)), closes [#152](https://github.com/silvermine/videojs-chromecast/issues/152) [#147](https://github.com/silvermine/videojs-chromecast/issues/147)
+
+
 ## [1.4.0](https://github.com/silvermine/videojs-chromecast/compare/v1.3.4...v1.4.0) (2023-03-21)
 
 
