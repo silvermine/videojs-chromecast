@@ -1,6 +1,6 @@
 {
   "name": "@silvermine/videojs-chromecast",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
   "scripts": {
