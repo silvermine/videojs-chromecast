@@ -4,7 +4,7 @@
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
   "scripts": {
-    "commitlint": "commitlint --from d4e7f7e",
+    "commitlint": "commitlint --from 5ed6165",
     "test": "check-node-version --npm 8.5.5 && nyc mocha -- -R spec 'tests/**/*.test.js'",
     "stylelint": "stylelint './src/scss/**/*.scss'",
     "eslint": "eslint '{,!(node_modules|dist)/**/}*.js'",
