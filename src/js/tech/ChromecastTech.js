@@ -69,7 +69,10 @@ module.exports = function(videojs) {
          this._remotePlayer = this._chromecastSessionManager.getRemotePlayer();
          this._remotePlayerController = this._chromecastSessionManager.getRemotePlayerController();
          this._listenToPlayerControllerEvents();
-         this.on('dispose', this._removeAllEventListeners.bind(this));
+         this.on('dispose', () => {
+            this._clearSessionTimeout();
+            this._removeAllEventListeners();
+         });
 
          this._hasPlayedAnyItem = false;
          this._requestTitle = options.requestTitleFn || function() { /* noop */ };
