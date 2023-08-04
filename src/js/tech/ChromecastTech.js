@@ -214,6 +214,7 @@ module.exports = function(videojs) {
          this._hasPlayedCurrentItem = false;
          castSession.loadMedia(request)
             .then(function() {
+               this._clearSessionTimeout();
                if (!this._hasPlayedAnyItem) {
                   // `triggerReady` is required here to notify the Video.js
                   // player that the Tech has been initialized and is ready.
