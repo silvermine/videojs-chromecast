@@ -80,6 +80,9 @@ module.exports = function(videojs) {
          };
          // See `currentTime` function
          this._initialStartTime = options.startTime || 0;
+         this._isScrubbing = false;
+         this._isSeeking = false;
+         this._scrubbingTime = this._initialStartTime;
 
          this._playSource(options.source, this._initialStartTime);
          this.ready(function() {
@@ -243,21 +246,50 @@ module.exports = function(videojs) {
        * @see {@link http://docs.videojs.com/Tech.html#setCurrentTime}
        */
       setCurrentTime(time) {
-         var duration = this.duration();
+         if (this.scrubbing()) {
+            this._scrubbingTime = time;
+            return false;
+         }
+         const duration = this.duration();
 
          if (time > duration || !this._remotePlayer.canSeek) {
             return;
          }
-         // Seeking to any place within (approximately) 1 second of the end of the item
-         // causes the Video.js player to get stuck in a BUFFERING state. To work around
-         // this, we only allow seeking to within 1 second of the end of an item.
-         this._remotePlayer.currentTime = Math.min(duration - 1, time);
-         this._remotePlayerController.seek();
+
+         // We need to delay the actual seeking, because when you
+         // scrub, videojs does pause() -> setCurrentTime() -> play()
+         // and that triggers a weird bug where the chromecast stops sending
+         // time_changed events.
+         this._isSeeking = true;
+         setTimeout(() => {
+            // Seeking to any place within (approximately) 1 second of the end of the item
+            // causes the Video.js player to get stuck in a BUFFERING state. To work
+            // around this, we only allow seeking to within 1 second
+            // of the end of an item.
+            this._remotePlayer.currentTime = Math.min(duration - 1, time);
+            this._remotePlayerController.seek();
+            this._isSeeking = false;
+         }, 500);
+
          this._triggerTimeUpdateEvent();
       }
 
       seeking() {
-         return false;
+         return this._isSeeking;
+      }
+
+      scrubbing() {
+         return this._isScrubbing;
+      }
+
+      setScrubbing(newValue) {
+         if (newValue === true) {
+            this._scrubbingTime = this.currentTime();
+            this._isScrubbing = true;
+         } else {
+            this._isScrubbing = false;
+            this.setCurrentTime(this._scrubbingTime);
+         }
       }
 
       /**
@@ -278,6 +310,11 @@ module.exports = function(videojs) {
          if (!this._hasPlayedAnyItem) {
             return this._initialStartTime;
          }
+
+         if (this.scrubbing() || this.seeking()) {
+            return this._scrubbingTime;
+         }
+
          return this._remotePlayer.currentTime;
       }
 
