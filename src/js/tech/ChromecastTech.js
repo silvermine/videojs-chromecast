@@ -256,6 +256,10 @@ module.exports = function(videojs) {
          this._triggerTimeUpdateEvent();
       }
 
+      seeking() {
+         return false;
+      }
+
       /**
        * Returns the current playback time position.
        *
