@@ -185,6 +185,9 @@ player.chromecast(); // initializes the Chromecast plugin
      If nothing is returned or if this option is not defined, no custom data will be sent.
      This option is intended to be used with a [custom receiver][custom-receiver] application
      to extend its default capabilities.
+   * **`chromecast.modifyLoadRequestFn`** - a function that this plugin calls before doing
+      the request to [load media][chromecast-load-media]. The function gets called with the
+      [LoadRequest][chromecast-load-request] object as argument and expects it in return.
 
 Here is an example configuration object that makes full use of all required and optional
 configuration:
@@ -220,6 +223,11 @@ options = {
       },
       requestCustomDataFn: function(source) { // Not required
          return customData[source.url];
+      },
+      modifyLoadRequestFn: function (loadRequest) { // HLS support
+         loadRequest.media.hlsSegmentFormat = 'fmp4';
+         loadRequest.media.hlsVideoSegmentFormat = 'fmp4';
+         return loadRequest;
       }
    },
    plugins: {
@@ -342,3 +350,5 @@ details.
 [player-source]: http://docs.videojs.com/Player.html#currentSource
 [custom-receiver]: https://developers.google.com/cast/docs/custom_receiver
 [contributing]: https://github.com/silvermine/silvermine-info#contributing
+[chromecast-load-media]: https://developers.google.com/cast/docs/reference/web_sender/cast.framework.CastSession#loadMedia
+[chromecast-load-request]: https://developers.google.com/cast/docs/reference/web_sender/chrome.cast.media.LoadRequest
