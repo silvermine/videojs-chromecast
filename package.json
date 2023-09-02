@@ -4,6 +4,7 @@
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
   "scripts": {
+    "build": "grunt build",
     "commitlint": "commitlint --from 5ed6165",
     "test": "check-node-version --npm 8.5.5 && nyc mocha -- -R spec 'tests/**/*.test.js'",
     "stylelint": "stylelint './src/scss/**/*.scss'",
@@ -13,10 +14,11 @@
     "release:preview": "node ./node_modules/@silvermine/standardization/scripts/release.js preview",
     "release:prep-changelog": "node ./node_modules/@silvermine/standardization/scripts/release.js prep-changelog",
     "release:finalize": "node ./node_modules/@silvermine/standardization/scripts/release.js finalize",
+    "predemo": "npm run build",
     "demo": "npm-run-all --parallel demo:serve demo:tunnel",
     "demo:serve": "serve docs/demo",
     "demo:tunnel": "lt --port 3000 -o",
-    "prepublish": "grunt build"
+    "prepublish": "npm run build"
   },
   "author": "Jeremy Thomerson",
   "license": "MIT",
