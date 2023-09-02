@@ -5,6 +5,7 @@
   "main": "src/js/index.js",
   "scripts": {
     "build": "grunt build",
+    "build:watch": "grunt watch",
     "commitlint": "commitlint --from 5ed6165",
     "test": "check-node-version --npm 8.5.5 && nyc mocha -- -R spec 'tests/**/*.test.js'",
     "stylelint": "stylelint './src/scss/**/*.scss'",
@@ -18,6 +19,7 @@
     "demo": "npm-run-all --parallel demo:serve demo:tunnel",
     "demo:serve": "serve docs/demo",
     "demo:tunnel": "lt --port 3000 -o",
+    "demo:watch": "npm-run-all --parallel demo build:watch",
     "prepublish": "npm run build"
   },
   "author": "Jeremy Thomerson",
