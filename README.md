@@ -325,11 +325,11 @@ folder contains grey, black, and blue versions of the icons.
 
 ### Events
 
-   *`chromecastConnected`: Triggers when Chromecast connected
-   *`chromecastDisconnected`: Triggers when Chromecast disconnected
-   *`chromecastDevicesAvailable`: Triggers on state change when Chromecast devices are available
-   *`chromecastDevicesUnavailable`: Triggers on state change when Chromecast devices are unavailable
-   *`chromecastRequested`: Triggers when the user has requested Chromecast playback using this
+   * **`chromecastConnected`** - triggers when Chromecast connected
+   * **`chromecastDisconnected`** - triggers when Chromecast disconnected
+   * **`chromecastDevicesAvailable`** - triggers on state change when Chromecast devices are available
+   * **`chromecastDevicesUnavailable`** - triggers on state change when Chromecast devices are unavailable
+   * **`chromecastRequested`** - triggers when the user has requested Chromecast playback using this
      plugin's Chromecast button
 
 ## How do I contribute?
