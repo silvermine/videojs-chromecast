@@ -136,7 +136,7 @@ module.exports = function(grunt) {
          options: {
             map: DEBUG,
             processors: [
-               require('autoprefixer')({ browsers: '> .05%' }), // eslint-disable-line global-require
+               require('autoprefixer')(), // eslint-disable-line global-require
             ],
          },
          styles: {

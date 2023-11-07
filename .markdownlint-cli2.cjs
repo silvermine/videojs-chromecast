@@ -1,0 +1,1 @@
+node_modules/@silvermine/standardization/.markdownlint-cli2.shared.cjs
