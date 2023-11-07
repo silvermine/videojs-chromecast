@@ -43,7 +43,7 @@
     "@commitlint/travis-cli": "8.3.5",
     "@silvermine/eslint-config": "3.0.1",
     "@silvermine/standardization": "2.2.0",
-    "autoprefixer": "7.1.1",
+    "autoprefixer": "8.6.5",
     "babel-eslint": "10.1.0",
     "babelify": "10.0.0",
     "check-node-version": "4.0.3",
