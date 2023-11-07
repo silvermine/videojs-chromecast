@@ -16,12 +16,12 @@ bar which will cast videos to a Chromecast.
 
 ## How do I use it?
 
-The `@silvermine/videojs-chromecast` plugin includes 3 types of assets: javascript, CSS,
+The `@silvermine/videojs-chromecast` plugin includes 3 types of assets: JavaScript, CSS,
 and images.
 
 You can either build the plugin locally and use the assets that are output from the build
-process directly, or you can install the plugin as an npm module, include the
-javascript and SCSS source in your project using a Common-JS module loader and SASS build
+process directly, or you can install the plugin as an NPM module, include the
+JavaScript and SCSS source in your project using a Common-JS module loader and SASS build
 process, and copy the images from the image source folder to your project.
 
 Note that regardless of whether you are using this plugin via the pre-built JS or as a
@@ -39,7 +39,7 @@ module, the Chromecast framework will need to be included after the plugin. For 
       using `npm install @silvermine/videojs-chromecast`.
    2. Ensure that `@silvermine/videojs-chromecast`'s `devDependencies` are installed by
       running `npm install` from within the `videojs-chromecast` folder.
-   3. Run `grunt build` to build and copy the javascript, CSS and image files to the
+   3. Run `grunt build` to build and copy the JavaScript, CSS and image files to the
       `videojs-chromecast/dist` folder.
    4. Copy the plugin's files from the `dist` folder into your project as needed.
    5. Ensure that the images in the `dist/images` folder are accessible at `./images/`,
@@ -48,9 +48,9 @@ module, the Chromecast framework will need to be included after the plugin. For 
       plugin's images should be located at `https://example.com/plugins/images/`.
    6. Follow the steps in the "Configuration" section below.
 
-Note: when adding the plugin's javascript to your web page, include the
-`silvermine-videojs-chromecast.min.js` javascript file in your HTML *after* loading
-Video.js. The plugin's built javascript file expects there to be a reference to Video.js
+Note: when adding the plugin's JavaScript to your web page, include the
+`silvermine-videojs-chromecast.min.js` JavaScript file in your HTML *after* loading
+Video.js. The plugin's built JavaScript file expects there to be a reference to Video.js
 at `window.videojs` and will throw an error if it does not exist.
 
 ### Initialization options
@@ -259,14 +259,14 @@ To localize the Chromecast button strings, follow the steps in the [Video.js Lan
 tutorial][videojs-translation] to add `"Open Chromecast menu"` and `"Cast"` keys to the
 map of translation strings.
 
-### Using the npm module
+### Using the NPM module
 
 If you are using a module loader such as Browserify or Webpack, first install
 `@silvermine/videojs-chromecast` using `npm install`. Then, use
 `require('@silvermine/videojs-chromecast')` to require `@silvermine/videojs-chromecast`
 into your project's source code. `require('@silvermine/videojs-chromecast')` returns a
-function that you can use to register the plugin with videojs by passing in a reference to
-`videojs`:
+function that you can use to register the plugin with Video.js by passing in a reference
+to `videojs`:
 
 ```js
 var videojs = require('video.js');
