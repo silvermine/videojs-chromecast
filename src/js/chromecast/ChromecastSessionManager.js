@@ -36,17 +36,30 @@ class ChromecastSessionManager {
 
       this._addCastContextEventListeners();
 
-      // Remove global event listeners when this player instance is destroyed to prevent
-      // memory leaks.
-      this.player.on('dispose', this._removeCastContextEventListeners.bind(this));
+      this.player.on('dispose', () => {
+         // Remove global event listeners when this player instance is destroyed
+         // to prevent memory leaks.
+         this._removeCastContextEventListeners();
+
+         // Clean up references since we can instantiate
+         // RemotePlayer & RemotePlayerController multiple times on the page life cycle
+         this.remotePlayer = null;
+         this.remotePlayerController = null;
+      });
 
       this._notifyPlayerOfDevicesAvailabilityChange(this.getCastContext().getCastState());
-
-      this.remotePlayer = new cast.framework.RemotePlayer();
-      this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
    }
 
    static hasConnected = false;
+
+   /**
+    * Used by ChromecastTech to setup remotePlayerController after media is loaded.
+    *
+    * */
+   setupPlayerController() {
+      this.remotePlayer = new cast.framework.RemotePlayer();
+      this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
+   }
 
    /**
     * Add event listeners for events triggered on the current CastContext.
