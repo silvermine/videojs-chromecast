@@ -348,6 +348,14 @@ all four button states ("default", "default + hover", "casting", "casting + hove
    * `chromecastRequested`: Triggers when the user has requested Chromecast playback using
      this plugin's Chromecast button
 
+## Demo
+
+1. `npm run demo`
+1. Your browser will open up a localtunnel page with a password prompt
+1. [Fetch your password](https://loca.lt/mytunnelpassword)
+1. Enter your password
+1. Cast from your local computer
+
 ## How do I contribute?
 
 We genuinely appreciate external contributions. See [our extensive
