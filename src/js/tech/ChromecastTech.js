@@ -1,5 +1,7 @@
 var ChromecastSessionManager = require('../chromecast/ChromecastSessionManager'),
-    ChromecastTechUI = require('./ChromecastTechUI');
+    ChromecastTechUI = require('./ChromecastTechUI'),
+    Throttler = require('../throttler');
+
 
 /**
  * Registers the ChromecastTech Tech with Video.js. Calls {@link
@@ -82,7 +84,12 @@ module.exports = function(videojs) {
          this._initialStartTime = options.startTime || 0;
          this._isScrubbing = false;
          this._isSeeking = false;
-         this._scrubbingTime = this._initialStartTime;
+
+         this.seekThrottler = new Throttler((time) => {
+            this._remotePlayer.currentTime = time;
+            this._remotePlayerController.seek();
+            this._triggerTimeUpdateEvent();
+         });
 
          this._playSource(options.source, this._initialStartTime);
          this.ready(function() {
@@ -246,30 +253,35 @@ module.exports = function(videojs) {
        * @see {@link http://docs.videojs.com/Tech.html#setCurrentTime}
        */
       setCurrentTime(time) {
-         if (this.scrubbing()) {
-            this._scrubbingTime = time;
-            return false;
-         }
          const duration = this.duration();
 
          if (time > duration || !this._remotePlayer.canSeek) {
             return;
          }
 
+         if (this.scrubbing()) {
+            this._isSeeking = true;
+            // We need to throttle the actual seeking, because when you
+            // scrub, videojs does pause() -> setCurrentTime() -> play()
+            // and that triggers a weird bug where the chromecast stops sending
+            // time_changed events.
+            this.seekThrottler.throttle(time);
+            return false;
+         }
+
          // We need to delay the actual seeking, because when you
          // scrub, videojs does pause() -> setCurrentTime() -> play()
          // and that triggers a weird bug where the chromecast stops sending
          // time_changed events.
-         this._isSeeking = true;
-         setTimeout(() => {
-            // Seeking to any place within (approximately) 1 second of the end of the item
-            // causes the Video.js player to get stuck in a BUFFERING state. To work
-            // around this, we only allow seeking to within 1 second
-            // of the end of an item.
-            this._remotePlayer.currentTime = Math.min(duration - 1, time);
-            this._remotePlayerController.seek();
+         this.player().one('play', () => {
+            if (this.seeking()) {
+               this.seekThrottler.executeRemaining();
+            } else {
+               this._remotePlayer.currentTime = time;
+               this._remotePlayerController.seek();
+            }
             this._isSeeking = false;
-         }, 500);
+         });
 
          this._triggerTimeUpdateEvent();
       }
@@ -284,11 +296,12 @@ module.exports = function(videojs) {
 
       setScrubbing(newValue) {
          if (newValue === true) {
-            this._scrubbingTime = this.currentTime();
             this._isScrubbing = true;
-         } else {
+            return;
+         }
+
+         if (newValue === false) {
             this._isScrubbing = false;
-            this.setCurrentTime(this._scrubbingTime);
          }
       }
 
@@ -309,10 +322,6 @@ module.exports = function(videojs) {
          // chromecast plays its first item.
          if (!this._hasPlayedAnyItem) {
             return this._initialStartTime;
-         }
-
-         if (this.scrubbing() || this.seeking()) {
-            return this._scrubbingTime;
          }
 
          return this._remotePlayer.currentTime;
