@@ -3,33 +3,25 @@
 <head>
    <meta charset=utf-8 />
    <title>silvermine-videojs-chromecast Demo</title>
-   <link href="https://unpkg.com/video.js@6.1.0/dist/video-js.css" rel="stylesheet">
-   <script src="https://unpkg.com/video.js@6.1.0/dist/video.js"></script>
-   <script src="/dist/silvermine-videojs-chromecast.min.js"></script>
-   <link href="/dist/silvermine-videojs-chromecast.css" rel="stylesheet">
-   <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 </head>
 <body>
    <h1>Demo of <code>silvermine-videojs-chromecast</code></h1>
 
-   <video id="video_1" class="video-js vjs-default-skin" controls preload="auto">
-      <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+   <select id="video-selector" style="margin-bottom: 20px;">
+      <option value="mp4">mp4</option>
+      <option value="hls-mp4">HLS (fragmented mp4)</option>
+   </select>
+
+   <select id="videojs-selector" style="margin-bottom: 20px;">
+      <option value="6">videojs 6</option>
+      <option value="7">videojs 7</option>
+      <option value="8">videojs 8</option>
+   </select>
+
+   <video id="video_1" class="video-js vjs-default-skin" controls preload="auto" width="auto">
    </video>
 
-   <script>
-      var options;
-
-      options = {
-         fluid: true,
-         techOrder: [ 'chromecast', 'html5' ],
-      };
-
-      videojs('video_1', options, function() {
-         var player = this;
-
-         player.chromecast();
-      });
-   </script>
+   <script src="/main.js"></script>
 
 </body>
 </html>

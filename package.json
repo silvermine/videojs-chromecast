@@ -9,7 +9,7 @@
     "commitlint": "commitlint --from 5ed6165",
     "test": "check-node-version --npm 8.5.5 && nyc mocha -- -R spec 'tests/**/*.test.js'",
     "stylelint": "stylelint './src/scss/**/*.scss'",
-    "eslint": "eslint '{,!(node_modules|dist|docs/demo/dist)/**/}*.js'",
+    "eslint": "eslint .",
     "markdownlint": "markdownlint-cli2",
     "standards": "npm run commitlint && npm run markdownlint && npm run stylelint && npm run eslint",
     "release:preview": "node ./node_modules/@silvermine/standardization/scripts/release.js preview",

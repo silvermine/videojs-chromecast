@@ -1,5 +1,6 @@
 {
 
-   "extends": "@silvermine/eslint-config/node"
+   "extends": "@silvermine/eslint-config/node",
+   "ignorePatterns": ["node_modules", "**/dist/*.js"]
 
 }
