@@ -82,7 +82,7 @@ module.exports = function(grunt) {
                            [
                               '@babel/preset-env',
                               {
-                                 debug: true,
+                                 debug: DEBUG,
                                  useBuiltIns: 'usage',
                                  shippedProposals: true,
                                  corejs: 3,
@@ -105,9 +105,9 @@ module.exports = function(grunt) {
                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> <%= versionInfo %> */\n',
                sourceMap: DEBUG,
                sourceMapIncludeSources: DEBUG,
-               mangle: DEBUG,
-               compress: DEBUG,
-               beautify: !DEBUG,
+               mangle: !DEBUG,
+               compress: !DEBUG,
+               beautify: DEBUG,
             },
          },
       },
