@@ -5,7 +5,10 @@
   "main": "src/js/index.js",
   "scripts": {
     "commitlint": "commitlint --from 5ed6165",
-    "test": "check-node-version --npm 8.5.5 && nyc mocha -- -R spec 'tests/**/*.test.js'",
+    "check-node-version": "check-node-version --node $(cat .nvmrc) --npm 10.5.0 --print",
+    "test": "nyc mocha -- -R spec 'tests/**/*.test.js'",
+    "build": "grunt build",
+    "build:debug": "grunt build --debug",
     "stylelint": "stylelint './src/scss/**/*.scss'",
     "eslint": "eslint '{,!(node_modules|dist)/**/}*.js'",
     "markdownlint": "markdownlint-cli2",
@@ -13,7 +16,7 @@
     "release:preview": "node ./node_modules/@silvermine/standardization/scripts/release.js preview",
     "release:prep-changelog": "node ./node_modules/@silvermine/standardization/scripts/release.js prep-changelog",
     "release:finalize": "node ./node_modules/@silvermine/standardization/scripts/release.js finalize",
-    "prepublish": "grunt build"
+    "prepublish": "npm run build"
   },
   "author": "Jeremy Thomerson",
   "license": "MIT",
