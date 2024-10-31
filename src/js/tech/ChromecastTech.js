@@ -62,14 +62,18 @@ module.exports = function(videojs) {
          this._eventListeners = [];
 
          this.videojsPlayer = this.videojs(options.playerId);
+
+         // videoPlayer.chromecastSessionManager will be undefined when
+         // players change during active casting. videojs will auto engage ChromecastTech
+         // on the new player before player.chromecast() is invoked
+         // which we depend on to initialize ChromecastSessionManager
+         // & assigns it to the player
+         if (!this.videojsPlayer.chromecastSessionManager) {
+            this.videojsPlayer.chromecastSessionManager = new ChromecastSessionManager(this.videojsPlayer);
+         }
          this._chromecastSessionManager = this.videojsPlayer.chromecastSessionManager;
 
          this._ui.updatePoster(this.videojsPlayer.poster());
-
-         this._remotePlayer = this._chromecastSessionManager.getRemotePlayer();
-         this._remotePlayerController = this._chromecastSessionManager.getRemotePlayerController();
-         this._listenToPlayerControllerEvents();
-         this.on('dispose', this._removeAllEventListeners.bind(this));
 
          this._hasPlayedAnyItem = false;
          this._requestTitle = options.requestTitleFn || function() { /* noop */ };
@@ -82,6 +86,11 @@ module.exports = function(videojs) {
          this._initialStartTime = options.startTime || 0;
 
          this._playSource(options.source, this._initialStartTime);
+         // Creating remotePlayerController after media is loaded
+         // fixes the unresponsive controller when media changes
+         this.on('loadeddata', () => {
+            this._setupPlayerController();
+         });
          this.ready(function() {
             this.setMuted(options.muted);
          }.bind(this));
@@ -169,6 +178,24 @@ module.exports = function(videojs) {
          // which we pass to the Chromecast player.
          this._currentSource = source;
          this._playSource(source, 0);
+      }
+
+      /**
+       * Creates RemotePlayer & RemotePlayerController
+       * sets up events listener & handles cleanup on dispose
+       *
+       * @private
+       * */
+      _setupPlayerController() {
+         this._chromecastSessionManager.setupPlayerController();
+         this._remotePlayer = this._chromecastSessionManager.getRemotePlayer();
+         this._remotePlayerController = this._chromecastSessionManager.getRemotePlayerController();
+         this._listenToPlayerControllerEvents();
+         this.on('dispose', () => {
+            this._removeAllEventListeners();
+            this._remotePlayer = null;
+            this._remotePlayerController = null;
+         });
       }
 
       /**
