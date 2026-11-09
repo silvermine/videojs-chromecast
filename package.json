@@ -4,7 +4,7 @@
   "description": "video.js plugin for casting to chromecast",
   "main": "src/js/index.js",
   "scripts": {
-    "check-node-version": "check-node-version --node $(cat .nvmrc) --npm 10.5.0 --print",
+    "check-node-version": "check-node-version --node $(cat .nvmrc) --npm 11.19.1 --print",
     "commitlint": "commitlint --from 5ed6165",
     "test": "nyc mocha -- 'tests/**/*.test.js'",
     "build": "grunt build",
