@@ -230,7 +230,9 @@ module.exports = function(videojs) {
                this.trigger('playing');
                this._hasPlayedAnyItem = true;
                this._isMediaLoading = false;
-               this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
+               if (this._getMediaSession()) {
+                  this._getMediaSession().addUpdateListener(this._onMediaSessionStatusChanged.bind(this));
+               }
             }.bind(this), this._triggerErrorEvent.bind(this));
       }
 
