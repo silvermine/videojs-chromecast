@@ -18,6 +18,7 @@ class TechComponentStub {
    }
    on() {}
    ready() {}
+   triggerReady() {}
 }
 
 describe('ChromecastTech', function() {
@@ -114,5 +115,62 @@ describe('ChromecastTech', function() {
       });
 
       expect(loadMediaSpy.calledWith(fakeRequest)).to.be(true);
+   });
+
+   describe('after castSession.loadMedia resolves', function() {
+      function createTechWithMediaSession(mediaSession) {
+         let ChromecastTech;
+
+         const videoJsSpy = () => {
+            return {
+               chromecastSessionManager: {
+                  getCastContext: () => {
+                     return {
+                        getCurrentSession: () => {
+                           return {
+                              loadMedia: () => {
+                                 return { then: (onLoaded) => { onLoaded(); } };
+                              },
+                              getMediaSession: () => { return mediaSession; },
+                           };
+                        },
+                     };
+                  },
+                  getRemotePlayer: () => {},
+                  getRemotePlayerController: () => {
+                     return {
+                        addEventListener: () => {},
+                     };
+                  },
+               },
+               poster: () => {},
+            };
+         };
+
+         videoJsSpy.getComponent = () => {
+            return TechComponentStub;
+         };
+         videoJsSpy.registerTech = (_, component) => {
+            ChromecastTech = component;
+         };
+
+         chromecastTech(videoJsSpy);
+
+         return new ChromecastTech({
+            source: 'source.url',
+         });
+      }
+
+      it('should not throw when the media session is already gone', function() {
+         expect(() => { createTechWithMediaSession(null); }).not.to.throwException();
+      });
+
+      it('should listen for media session updates when the media session exists', function() {
+         const mediaSession = { addUpdateListener: sinon.spy() };
+
+         createTechWithMediaSession(mediaSession);
+
+         expect(mediaSession.addUpdateListener.calledOnce).to.be(true);
+      });
    });
 });
